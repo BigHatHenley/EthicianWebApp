@@ -1,0 +1,56 @@
+/* components/HomePage.css */
+
+.homepage {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Fallback color */
+    background-image: url('components/images/HomepageImage.jpg') !important;
+  }
+  
+  .glassmorphism-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  .glassmorphism-container h1 {
+    color: #fff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .glassmorphism-container p {
+    color: #fff;
+    font-size: 1.2rem;
+  }
+  
+  /* Navbar styles */
+  .navbar {
+    background-color: #333; /* Dark background color */
+    padding: 10px; /* Add some padding */
+  }
+  
+  .navbar ul {
+    list-style-type: none; /* Remove bullet points */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+  }
+  
+  .navbar ul li {
+    display: inline; /* Display list items horizontally */
+    margin-right: 20px; /* Add some space between list items */
+  }
+  
+  .navbar ul li a {
+    color: white; /* Text color */
+    text-decoration: none; /* Remove underline from links */
+  }
+  
+  .navbar ul li a:hover {
+    text-decoration: underline; /* Add underline on hover */
+  }

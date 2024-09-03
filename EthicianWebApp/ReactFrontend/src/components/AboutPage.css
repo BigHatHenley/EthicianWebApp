@@ -1,0 +1,40 @@
+/* components/AboutPage.css */
+
+.about-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Fallback color */
+    background-image: url("../components/images/AboutUsImage.jpg") !important;
+  }
+  
+  .glassmorphism-container {
+    background: rgba(255, 255, 255, 0.15); /* Different color for glassmorphism container */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  .glassmorphism-container h2 {
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .person {
+    margin-bottom: 30px;
+  }
+  
+  .person h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .person p {
+    color: #fff;
+    font-size: 1rem;
+  }

@@ -1,0 +1,134 @@
+.my-ui {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .output-box {
+    flex: 7;
+    width: 100%;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  
+  .expert-button {
+    background-color: lightblue;
+    color: black; /* Adjust text color as needed */
+    border: none;
+    cursor: pointer;
+    outline: none;
+    width: 200px; /* Adjust width as needed */
+    height: 50px; /* Adjust height as needed */
+    margin-right: 1px; /* Adjust the gap between buttons */
+  }
+  
+  .expert-button.active {
+    background-color: lightgreen; /* Change background color for active buttons */
+  }
+  
+  .button-matrix {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    gap: 2px;
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .button-container {
+    display: flex;
+  }
+  
+  .right-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+  }
+  
+  .right-button {
+    width: 200px; /* Adjust width as needed */
+    height: 50px; /* Adjust height as needed */
+    margin-right: 10px; /* Adjust the gap between buttons */
+    margin-left: 40px;
+  }
+  
+  .dropdown select {
+    width: 200px; /* Adjust width as needed */
+    height: 50px;
+    margin-right: 10px;
+    margin-left: 40px;
+  }
+  
+  .output {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .message-container {
+    display: flex;
+    justify-content: flex-end; /* Default align-right for user messages */
+  }
+  
+  .align-left {
+    justify-content: flex-start; /* Align left for agent messages */
+  }
+  
+  .message-bubble {
+    display: inline-block;
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+  }
+  
+  .message-text {
+    font-size: 1em;
+  }
+  
+  .message-result {
+    font-size: 0.8em;
+    color: #888;
+  }
+  
+  .speaker-info {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .speaker-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .speaker-name {
+    font-size: 0.8em;
+    color: #888;
+  }
+  
+  .user-message {
+    align-self: flex-end;
+    background-color: #DCF8C6; /* User bubble color */
+    color: black;
+  }
+  
+  .agent-message {
+    align-self: flex-start;
+    background-color: #E5E5EA; /* Agent bubble color */
+    color: black;
+  }
+  
+  .align-right {
+    align-self: flex-end;
+  }
+  
+  .align-left {
+    align-self: flex-start;
+  }
