@@ -1,14 +1,17 @@
 import React from 'react';
+import axios from 'axios';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom'; // Import BrowserRouter, Route, and Routes
 import './HomePage.css'; // Import CSS file for styling
-//import './Navbar.css';
 
 // Components for other pages
 import AboutPage from './components/AboutPage';
 import PricingPage from './components/PricingPage';
 import MyUI from './components/MultiChatXpertPage';
 import Navbar from './components/Navbar';
+import LoginForm from './components/LoginForm';
+import SignUpForm from './components/SignUpForm';
 
+axios.defaults.baseURL = 'http://localhost:8000';
 
 function HomePageUI() {
   return (
@@ -33,6 +36,8 @@ function HomePage() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/multichatxpert" element={<MyUI />} />
+        <Route path="/login-form" element={<LoginForm />} />
+        <Route path="/signup" element={<SignUpForm />} />
       </Routes>
     </BrowserRouter>
   );

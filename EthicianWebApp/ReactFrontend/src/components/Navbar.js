@@ -10,6 +10,7 @@ function Navbar() {
         <li className="navbar-item"><Link to="/about">About Us</Link></li>
         <li className="navbar-item"><Link to="/pricing">Pricing</Link></li>
         <li className="navbar-item"><Link to="/multichatxpert">MultiChatXpert</Link></li>
+        <li className="navbar-item"><Link to="/login-form">Login</Link></li>
       </ul>
     </nav>
   );
