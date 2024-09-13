@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { BrowserRouter, Route, Routes, Link } from 'react-router-dom'; // Import BrowserRouter, Route, and Routes
+import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Import BrowserRouter, Route, and Routes
 import './HomePage.css'; // Import CSS file for styling
 
 // Components for other pages
