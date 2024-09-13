@@ -1,4 +1,4 @@
-from multiChatXpert.models import UploadedFile
+from MultiChatXpert.models import UploadedFile
 from . import fileUpload
 
 def save_and_process_file(uploaded_file, UploadedFile):

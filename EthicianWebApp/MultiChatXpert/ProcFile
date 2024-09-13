@@ -1,1 +1,1 @@
-web: gunicorn MultiChatXpert.wsgi --log-file -
+web: waitress-serve --host=0.0.0.0 --port=8080 MultiChatXpert.wsgi:application
