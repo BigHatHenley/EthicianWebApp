@@ -7,15 +7,16 @@ if [ "$(uname)" == "Darwin" ]; then
     pip install pyaudio
 elif [ -f /etc/debian_version ]; then
     # Debian-based Linux (e.g., Ubuntu)
-    echo "Detected Debian-based Linux. Installing portaudio19-dev..."
-    sudo apt-get update
-    sudo apt-get install -y portaudio19-dev
-    sudo apt-get install -y python-pyaudio
-    pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
+    echo "Detected Debian-based Linux. Installing portaudio (if possible without sudo)..."
+    apt-get update
+    apt-get install -y portaudio19-dev || echo "Unable to install portaudio19-dev; please check permissions."
+    # Fallback to installing prebuilt PyAudio wheel
+    pip install pipwin
+    pipwin install pyaudio
 elif [ -f /etc/redhat-release ]; then
     # Red Hat-based Linux (e.g., Fedora, CentOS)
     echo "Detected Red Hat-based Linux. Installing portaudio-devel..."
-    sudo yum install -y portaudio-devel
+    yum install -y portaudio-devel || echo "Unable to install portaudio-devel; please check permissions."
 else
     echo "Unsupported OS. Please manually install portaudio."
     exit 1
