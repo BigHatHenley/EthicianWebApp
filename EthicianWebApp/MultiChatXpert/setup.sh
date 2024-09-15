@@ -16,3 +16,6 @@ else
     echo "Unsupported OS. Please manually install portaudio."
     exit 1
 fi
+
+# Install Python packages
+pip install -r requirements.txt
