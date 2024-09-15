@@ -153,3 +153,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, '..', 'ReactFrontend', 'build', 'stat
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_COOKIE_SECURE = True  # Set to False if debugging over HTTP
+CSRF_COOKIE_SECURE = True  # Set to False if debugging over HTTP
