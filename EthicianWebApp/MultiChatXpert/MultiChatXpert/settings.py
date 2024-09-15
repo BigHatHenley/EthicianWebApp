@@ -60,7 +60,9 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "ethicianwebapp.onrender.com"
+    "http://localhost:8080",
+    "http://localhost:10000",
+    "https://ethicianwebapp.onrender.com"
 ]
 
 ROOT_URLCONF = 'MultiChatXpert.urls'
