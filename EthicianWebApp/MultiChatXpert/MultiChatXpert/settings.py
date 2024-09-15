@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-n#9@n@wo!px@0&w-d7^&!qt0oh=!3s(@v*15wlpqcoyq_6m*f0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["ethicianwebapp.onrender.com"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
