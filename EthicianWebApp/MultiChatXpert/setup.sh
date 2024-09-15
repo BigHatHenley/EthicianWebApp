@@ -8,6 +8,7 @@ elif [ -f /etc/debian_version ]; then
     echo "Detected Debian-based Linux. Installing portaudio19-dev..."
     sudo apt-get update
     sudo apt-get install -y portaudio19-dev
+    sudo apt-get install -y python-pyaudio
 elif [ -f /etc/redhat-release ]; then
     # Red Hat-based Linux (e.g., Fedora, CentOS)
     echo "Detected Red Hat-based Linux. Installing portaudio-devel..."
