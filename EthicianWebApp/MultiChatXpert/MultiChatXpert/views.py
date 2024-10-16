@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .PromptAPICalls.textPrompt import textPrompt
-from .PromptAPICalls.mediaPrompt import mediaPrompt
+from .PromptAPICalls.sendTextPrompt import textPrompt
+from .PromptAPICalls.sendMediaPrompt import mediaPrompt
 from .PromptAPICalls.fileSaving import save_and_process_file
 from .models import UploadedFile  # Import UploadedFile model
 
@@ -12,7 +12,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserAccountSerializer
 from django.http import HttpResponse
-from .mongodb_access import add_user, get_user, add_conversation
+
+from django.conf import settings
+import datetime
+
+#=================================================================
+#======================== Login Classes ==========================
+#=================================================================
 
 class RegisterView(APIView):
     def post(self, request):
@@ -34,8 +40,44 @@ class LoginView(APIView):
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#==================================================================
+#====================== Backend Health Check ======================
+#==================================================================
+
 def health_check(request):
     return JsonResponse({'status': 'ok'})
+
+#==================================================================
+#========================= MongoDB Functions ======================
+#==================================================================
+
+def get_user_collection():
+    return settings.mongo_db['users']
+
+def get_conversation_collection():
+    return settings.mongo_db['conversations']
+
+def add_user(username, email, password):
+    user_collection = get_user_collection()
+    user_data = {
+        'username': username,
+        'email': email,
+        'password': password
+    }
+    user_collection.insert_one(user_data)
+
+def get_user(username):
+    user_collection = get_user_collection()
+    return user_collection.find_one({'username': username})
+
+def add_conversation(user_id, conversation_text):
+    conversation_collection = get_conversation_collection()
+    conversation_data = {
+        'user_id': user_id,
+        'conversation_text': conversation_text,
+        'timestamp': datetime.datetime.now()
+    }
+    conversation_collection.insert_one(conversation_data)
 
 def save_conversation(request):
     if request.method == 'POST':
@@ -47,6 +89,10 @@ def save_conversation(request):
 
 def index(request):
     return render(request, 'index.html')
+
+#===========================================================
+#===================== LLM Interactions ====================
+#===========================================================
 
 def analyze_text(request):
     print("Processing POST request to 'multichatxpert' endpoint")
