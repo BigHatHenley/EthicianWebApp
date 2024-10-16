@@ -1,4 +1,3 @@
-import pywintypes
 from PIL import Image
 import os
 import base64
@@ -22,7 +21,7 @@ def fileUpload(self, instance, selection, touch=None, modifiers=None):
         # Get the selected file from the file chooser
         selected_file = self.file_chooser.selection and self.file_chooser.selection[0] or None
         self.output_label.text += f"Selected File: {selected_file}\n\n"
-    except pywintypes.error as e:
+    except OSError as e:
         # Suppress specific errors related to accessing system files
         pass
     except Exception as e:
