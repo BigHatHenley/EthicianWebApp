@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from .views import index, health_check
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,3 +26,6 @@ urlpatterns = [
     path('', index, name='index'),
     path('health/', health_check, name='health_check')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
