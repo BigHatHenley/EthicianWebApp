@@ -7,6 +7,44 @@ from .models import UploadedFile  # Import UploadedFile model
 import json
 from django.shortcuts import render
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserAccountSerializer
+from django.http import HttpResponse
+from .mongodb_access import add_user, get_user, add_conversation
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserAccountSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            add_user(data['username'], data['email'], data['password'])
+            return Response({"message": "User registered successfully!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    def post(self, request):
+        serializer = UserAccountSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            user = get_user(data['username'])
+            if user and user['password'] == data['password']:
+                return Response({"message": "Login successful!"}, status=status.HTTP_200_OK)
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
+
+def save_conversation(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        conversation_text = request.POST['conversation_text']
+        add_conversation(user_id, conversation_text)
+        return HttpResponse("Conversation saved successfully!")
+    return render(request, 'conversation.html')
+
 def index(request):
     return render(request, 'index.html')
 
