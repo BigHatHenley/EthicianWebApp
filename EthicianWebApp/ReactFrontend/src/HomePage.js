@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'; // Import BrowserRouter, Route, and Routes
+import { HashRouter, Route, Routes } from 'react-router-dom'; // Import BrowserRouter, Route, and Routes
 import './HomePage.css'; // Import CSS file for styling
 
 // Components for other pages
@@ -29,7 +29,7 @@ function HomePageUI() {
 
 function HomePage() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Navbar /> {/* Render the Navbar component */}
       <Routes>
         <Route path="/" element={<HomePageUI />} />
@@ -39,7 +39,7 @@ function HomePage() {
         <Route path="/login-form" element={<LoginForm />} />
         <Route path="/signup" element={<SignUpForm />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

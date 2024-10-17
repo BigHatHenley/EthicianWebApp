@@ -1,7 +1,7 @@
 # models.py
 from django.db import models
 
-class UploadedFile(models.Model):
+class UploadedFileModel(models.Model):
     file = models.FileField(upload_to='uploads/')
     file_data = models.TextField()  # Adjust this field based on your processed data type
 

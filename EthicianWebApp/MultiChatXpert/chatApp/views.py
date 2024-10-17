@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from .PromptAPICalls.sendTextPrompt import textPrompt
 from .PromptAPICalls.sendMediaPrompt import mediaPrompt
 from .PromptAPICalls.fileSaving import save_and_process_file
-from .models import UploadedFile  # Import UploadedFile model
+from .models import UploadedFileModel  # Import UploadedFile model
 
 import json
 from django.shortcuts import render
@@ -95,7 +95,7 @@ def index(request):
 #===========================================================
 
 def analyze_text(request):
-    print("Processing POST request to 'multichatxpert' endpoint")
+    print("Processing POST request to 'chatApp' endpoint")
     if request.method == 'POST':
         text = request.POST.get('text', '')
         uploaded_file = request.FILES.get('file')
@@ -113,7 +113,7 @@ def analyze_text(request):
             prompt = text
         
         if uploaded_file:
-            file_data = save_and_process_file(uploaded_file, UploadedFile)
+            file_data = save_and_process_file(uploaded_file, UploadedFileModel)
             if file_data:
                 result = mediaPrompt(prompt, currentLLM, file_data)
             else:

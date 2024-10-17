@@ -10,9 +10,6 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
 from django.http import JsonResponse
 
-from .textPrompt import get_text_claude, get_text_gemini
-
-
 _ = load_dotenv(find_dotenv())
 
 #Conversation -> GPT
@@ -92,7 +89,14 @@ def mediaPrompt(question2ask, currentLLM, event=None):
     elif (currentLLM == "claude-3-5-sonnet"):
         if (file_type == 'txt') or (file_type == 'docx') or (file_type == 'pdf'):
             fullPrompt = question2ask + fileText
-            output = get_text_claude(fullPrompt)
+            message= claudeClient.messages.create(
+                model="claude-3-5-sonnet-20240620",
+                max_tokens=2048,
+                messages=[
+                    {"role": "user", "content": fullPrompt}
+                ]
+            )
+            output = message.content[0].text
             outputCopy = output
             return {'output': output}
         else:

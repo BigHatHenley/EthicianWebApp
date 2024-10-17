@@ -1,1 +1,1 @@
-web: waitress-serve --host=0.0.0.0 --port=$PORT MultiChatXpert.wsgi:application
+web: gunicorn chatApp.wsgi:application --bind 0.0.0.0:$PORT
