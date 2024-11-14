@@ -40,7 +40,7 @@ function MultiChatXpertPage() {
     const fetchConversations = async () => {
       try {
         const csrfToken = getCsrfToken(); // Retrieve CSRF token function
-        const response = await axios.get('https://ethician-react.onrender.com/api/get_conversations/', {
+        const response = await axios.get('https://ethician-django.onrender.com/api/get_conversations/', {
           withCredentials: true,
           headers: {
             'X-CSRFToken': csrfToken,
@@ -180,7 +180,7 @@ function MultiChatXpertPage() {
     try {
         console.log("Sending message to backend");
         const response = await axios.post(
-            'https://ethician-react.onrender.com/api/analyze_text/',
+            'https://ethician-django.onrender.com/api/analyze_text/',
             formData,
             {
                 headers: {
@@ -210,7 +210,7 @@ function MultiChatXpertPage() {
                 .map((msg) => msg.text || msg.images?.[0]?.url || "")
                 .join('\n');
             await axios.post(
-                'https://ethician-react.onrender.com/api/save_conversation/',
+                'https://ethician-django.onrender.com/api/save_conversation/',
                 { conversation_text: fullConversation },
                 {
                     headers: { 'X-CSRFToken': getCsrfToken() },
