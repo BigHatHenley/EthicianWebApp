@@ -15,6 +15,7 @@ import pymongo
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import certifi
 
 load_dotenv()
 
@@ -124,7 +125,7 @@ MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
 
 # Initialize MongoDB connection
-mongo_client = MongoClient(MONGO_URI)
+mongo_client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 mongo_db = mongo_client[MONGO_DB_NAME]
 
 # Define the DB_COLLECTION setting for session storage
@@ -135,7 +136,7 @@ SETTINGS = {
     'MONGO_DB': mongo_db,
 }
 
-SESSION_ENGINE = 'mongo_sessions.session'  # Use mongo_sessions for session storage
+SESSION_ENGINE = 'chatApp.mongo_sessions.session'  # Use mongo_sessions for session storage
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
