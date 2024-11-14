@@ -122,20 +122,36 @@ WSGI_APPLICATION = 'chatApp.wsgi.application'
 #     }
 # }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
+import logging
+
 MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
 
-# Initialize MongoDB connection
-mongo_client = MongoClient(
-    MONGO_URI,
-    ssl=True,
-    ssl_cert_reqs=ssl.CERT_REQUIRED,
-    tlsCAFile=certifi.where(),
-)
-mongo_db = mongo_client[MONGO_DB_NAME]
-
-# Define the DB_COLLECTION setting for session storage
-DB_COLLECTION = mongo_db['mongo_sessions']  # Name the collection where sessions will be stored
+try:
+    mongo_client = MongoClient(
+        MONGO_URI,
+        tls=True,
+        tlsCAFile=certifi.where()
+    )
+    mongo_db = mongo_client[MONGO_DB_NAME]
+    DB_COLLECTION = mongo_db['mongo_sessions']
+except Exception as e:
+    logging.error(f"Error connecting to MongoDB: {e}")
+    raise
 
 # Add to settings
 SETTINGS = {
