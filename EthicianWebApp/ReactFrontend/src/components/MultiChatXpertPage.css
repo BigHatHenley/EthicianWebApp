@@ -139,6 +139,8 @@
   border: none;
   cursor: pointer;
   text-align: center;
+  width: 100px;
+  height: 20px;
 }
 
 /* Selected (toggled on) expert button styling */
@@ -326,6 +328,7 @@
 
 .user-message {
   background-color: #4caf50;
+  color: #fff;
   margin-top: 10px;
   margin-right: 10px;
   align-self: flex-end; /* Align user message to the right */
