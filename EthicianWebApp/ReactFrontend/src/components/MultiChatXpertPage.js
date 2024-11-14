@@ -1,158 +1,590 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './MultiChatXpertPage.css';
-import ChatEditor from './ChatEditor';
-import ConvoContainer from './ConvoContainer'; // Adjust the import path if necessary
+import userImage from './images/personTyping.gif';
+import aiImage from './images/AILooking.gif';
+import axios from 'axios';
+import Bowser from "bowser";
 
-function MyUI() {
+function MultiChatXpertPage() {
   const [messages, setMessages] = useState([]);
-  const [buttonStates, setButtonStates] = useState(Array(15).fill(false));
-  const [selectedOption, setSelectedOption] = useState("GPT-4o"); // Add state for selected option
+  const [isTTSEnabled, setTTSEnabled] = useState(false);
+  const [isExpertPopupOpen, setExpertPopupOpen] = useState(false);
+  const [experts, setExperts] = useState([
+    "Ethician", "Mechanical Engineer", "Metallurgist", "Safety Engineer", "Materials Engineer",
+    "Robotics Engineer", "Electrical Engineer", "Civil Engineer", "Software Engineer", "Chemical Engineer",
+    "Aerospace Engineer", "Petroleum Engineer", "Biomedical Engineer", "Environment Engineer", "Quality Engineer"
+  ]);
+  const [selectedExperts, setSelectedExperts] = useState([]);
+  const [currentLLM, setCurrentLLM] = useState(null);
+  const [showEditPopup, setShowEditPopup] = useState(false); // Track if edit popup is open
+  const [currentExpertEdit, setCurrentExpertEdit] = useState(null); // Track current expert to edit
+  const [newExpertName, setNewExpertName] = useState(""); // Track new expert name input
+  
+  // const [expertToggles, setExpertToggles] = useState(Array(15).fill(false));
+  const [prompt, setPrompt] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [volume, setVolume] = useState(50); // Volume state
 
-  const handleSendMessage = async (message, file) => {
-    try {
-      // Add user's message to messages state
-      const newUserMessage = {
-        text: message,
-        sender: 'user',
-      };
-      setMessages([...messages, newUserMessage]);
-  
-      const formData = new FormData();
-      formData.append('text', message);
-      if (file) {
-        formData.append('file', file);
+  // Check if the browser supports speech recognition
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+  const browser = Bowser.getParser(window.navigator.userAgent);
+  const isFirefox = browser.getBrowserName() === "Firefox";
+
+  const [conversationHistory, setConversationHistory] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Assume initially logged out
+
+  const [attachedFiles, setAttachedFiles] = useState([]);  // <-- Define attachedFiles here
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const csrfToken = getCsrfToken(); // Retrieve CSRF token function
+        const response = await axios.get('https://199c-2601-702-0-9480-988c-b43-9c08-63d1.ngrok-free.app/api/get_conversations/', {
+          withCredentials: true,
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+        });
+        setConversationHistory(response.data);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error fetching conversation history:', error);
+        setIsLoggedIn(false);
       }
+    };
   
-      // Adding selected experts to the formData
-      const selectedExperts = buttonStates.reduce((acc, state, index) => {
-        if (state) {
-          acc.push(index);
-        }
-        return acc;
-      }, []);
-      formData.append('selected_experts', JSON.stringify(selectedExperts));
-  
-      // Send selected option to backend
-      formData.append('selected_option', selectedOption);
-  
-      // Fetch CSRF token from cookie
-      const csrfToken = document.cookie.match(/csrftoken=([^ ;]+)/)[1];
-  
-      const response = await fetch('http://localhost:3000/multichatxpert', {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': csrfToken, // Include CSRF token in headers
-        },
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const responseData = await response.json();
-      console.log('Agent Response:', responseData.result); // Log agent's response
-  
-      // Add agent's response to messages state
-      const newAgentMessage = {
-        text: responseData.result, // Assuming the result contains the agent's response
-        sender: 'agent',
-      };
-      console.log('New Agent Message:', newAgentMessage); // Log new agent message
-      setMessages([...messages, newAgentMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      const errorMessage = {
-        text: message,
-        sender: 'agent',
-        result: 'Error occurred in Multi, please try again.',
-      };
-      setMessages([...messages, errorMessage]);
+    fetchConversations();
+  }, []);
+
+
+  if (recognition) {
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setPrompt(transcript);  // Update the entry bar with the transcribed text
+      console.log("Transcribed Text:", transcript);  // Log transcription to browser console
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);  // Error handling in console
+      setIsListening(false);  // Reset listening state
+    };
+
+    recognition.onend = () => {
+      console.log("Speech recognition ended.");  // Log end of recognition to browser console
+      setIsListening(false);  // Ensure the recording state is reset
+    };
+  }
+
+  // Updated `handleStartListening` function
+  const handleStartListening = () => {
+    if (isFirefox) {
+        alert("Speech recognition is not supported on Firefox. Please use a different browser.");
+        return;
+    }
+    if (recognition && !isListening) {
+        setPrompt("");  // Clear any previous text in entry bar
+        setIsListening(true);
+        console.log("Starting Speech Recognition");  // Log to browser console
+        recognition.start();
     }
   };
 
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+  // Updated `handleStopListening` function
+  const handleStopListening = () => {
+    if (recognition && isListening) {
+        console.log("Stopping Speech Recognition");  // Log to browser console
+        recognition.stop();
+        setIsListening(false);  // Reset state so user can restart recording
+    }
   };
 
-  const handleButtonClick = (index) => {
-    setButtonStates((prevButtonStates) => {
-      const newButtonStates = [...prevButtonStates];
-      newButtonStates[index] = !newButtonStates[index]; // Toggle button state
-      return newButtonStates;
+  // Function to toggle TTS setting
+  const toggleTTS = () => {
+    setTTSEnabled(!isTTSEnabled);
+    console.log("TTS Enabled:", !isTTSEnabled); // Log for confirmation
+  };
+
+  const toggleExpertPopup = () => {
+    setExpertPopupOpen(!isExpertPopupOpen);
+  };
+
+  // Function to handle expert selection in the AI Image popup
+  const handleExpertSelection = (expert) => {
+    setSelectedExperts((prevExperts) => {
+        const updatedExperts = prevExperts.includes(expert)
+            ? prevExperts.filter((e) => e !== expert)
+            : [...prevExperts, expert];
+        console.log("Updated selectedExperts:", updatedExperts);  // Log after update
+        return updatedExperts;
     });
   };
 
-  const generateButtonMatrix = () => {
-    return [
-      { index: 0, expert: "Ethician" },
-      { index: 1, expert: "Mechanical Engineer" },
-      { index: 2, expert: "Metallurgist" },
-      { index: 3, expert: "Safety Engineer" },
-      { index: 4, expert: "Materials Engineer" },
-      { index: 5, expert: "Robotics Engineer" },
-      { index: 6, expert: "Electrical Engineer" },
-      { index: 7, expert: "Civil Engineer" },
-      { index: 8, expert: "Software Engineer" },
-      { index: 9, expert: "Chemical Engineer" },
-      { index: 10, expert: "Aerospace Engineer" },
-      { index: 11, expert: "Petroleum Engineer" },
-      { index: 12, expert: "Biomedical Engineer" },
-      { index: 13, expert: "Environment Engineer" },
-      { index: 14, expert: "Quality Engineer" }
-    ].map(({ index, expert }) => (
-      <button
-        key={index}
-        className={`expert-button ${buttonStates[index] ? 'active' : ''}`}
-        onClick={() => {
-          handleButtonClick(index);
-          // Set bXEnabled variable (you can adjust the name if needed)
-          const bXEnabled = buttonStates[index];
-          console.log(`b${index + 1}Enabled:`, bXEnabled);
-        }}
-      >
-        {expert}
-      </button>
-    ));
+  const handleLLMSelection = (llm) => {
+    setCurrentLLM(llm);
+    console.log("Updated currentLLM:", llm);  // Log after update
+  };
+
+  const handleEditExpertClick = (index) => {
+    setCurrentExpertEdit(index);
+    setNewExpertName(experts[index]);
+    setShowEditPopup(true);
+  };
+  
+  const handleSaveExpertName = () => {
+    const updatedExperts = [...experts];
+    updatedExperts[currentExpertEdit] = newExpertName;
+    setExperts(updatedExperts);
+    setShowEditPopup(false);
+  };
+
+  function getCsrfToken() {
+    const name = 'csrftoken';
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        return cookie.substring(name.length + 1);
+      }
+    }
+    return null;
+  }
+
+  const handleRestoreConversation = (conversationText) => {
+    // Assuming conversationText is newline-delimited for each message
+    const restoredMessages = conversationText.split('\n').map((text, idx) => ({
+      text,
+      isUser: idx % 2 === 0, // Toggle between user and AI messages for simplicity
+    }));
+    setMessages(restoredMessages);
+  };
+  
+
+  const handleSendMessage = async (message) => {
+    const formData = new FormData();
+    formData.append("text", message);
+    formData.append("selected_experts", JSON.stringify(selectedExperts));
+    formData.append("selected_option", currentLLM);
+
+    // Attach files if there are any
+    if (attachedFiles.length > 0) {
+        attachedFiles.forEach((file) => {
+            formData.append('file', file);
+        });
+    }
+
+    try {
+        console.log("Sending message to backend");
+        const response = await axios.post(
+            'https://199c-2601-702-0-9480-988c-b43-9c08-63d1.ngrok-free.app/api/analyze_text/',
+            formData,
+            {
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                withCredentials: true,
+            }
+        );
+
+        console.log("Full response data:", response.data);
+
+        // Safely extract the 'text' content from the response data
+        const aiResponseText = response.data.text ? response.data.text : response.data.output || "No response received";
+
+        // Update the messages array with the text response
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: aiResponseText, isUser: false }
+        ]);
+
+        // Trigger TTS if enabled
+        if (isTTSEnabled) speakText(aiResponseText, volume / 100);
+
+        // Save conversation if the user is logged in
+        if (isLoggedIn) {
+            const fullConversation = messages
+                .map((msg) => msg.text || msg.images?.[0]?.url || "")
+                .join('\n');
+            await axios.post(
+                'https://199c-2601-702-0-9480-988c-b43-9c08-63d1.ngrok-free.app/api/save_conversation/',
+                { conversation_text: fullConversation },
+                {
+                    headers: { 'X-CSRFToken': getCsrfToken() },
+                    withCredentials: true,
+                }
+            );
+        }
+    } catch (error) {
+        console.error('Error sending message to backend:', error);
+    }
+};
+
+  // Ensure `speakText` uses the specified volume
+  const speakText = (text, volumeLevel = 0.5) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.volume = volumeLevel;  // Volume adjusted here
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn("TTS not supported in this browser");
+    }
   };
 
   return (
-    <div className="my-ui">
-      <div className="output-box">
-        <ConvoContainer messages={messages} />
+    <div className="my-ui-container">
+      <div className="ai-container">
+        <button className="ai-image" onClick={toggleExpertPopup}>
+          <img src={aiImage} alt="AI Expert" />
+        </button>
       </div>
 
-      <div className="editor-buttons">
-        <ChatEditor onSendMessage={handleSendMessage} />
+      {/* AI Expert Popup with Toggle Indicator */}
+      {isExpertPopupOpen && (
+        <div className="expert-popup">
+          <h4>Available Experts</h4>
+          <div className="expert-grid">
+            {experts.map((expert, index) => (
+              <button
+                key={index}
+                onClick={() => handleExpertSelection(expert)}
+                className={`expert-button ${selectedExperts.includes(expert) ? 'selected' : ''}`}
+              >
+                {expert}
+              </button>
+            ))}
+          </div>
+          <button onClick={toggleExpertPopup} className="close-popup-button">Close</button>
+        </div>
+      )}
+
+      <div className="console-container">
+      <Console
+        experts={experts}
+        conversationHistory={conversationHistory}
+        handleRestoreConversation={handleRestoreConversation}
+        handleEditExpertClick={handleEditExpertClick}
+        volume={volume}
+        setVolume={setVolume}
+        handleStartListening={handleStartListening}
+        handleStopListening={handleStopListening}
+        isListening={isListening} // Control the button label and behavior
+        handleLLMSelection={handleLLMSelection}  // Pass handleLLMSelection to Console
+        currentLLM={currentLLM}
+        toggleTTS={toggleTTS}
+        isTTSEnabled={isTTSEnabled}
+      />
       </div>
 
-      <div className="button-container">
-        <div className="button-matrix">
-          <div className="button-row">
-            {generateButtonMatrix().slice(0, 5)}
-          </div>
-          <div className="button-row">
-            {generateButtonMatrix().slice(5, 10)}
-          </div>
-          <div className="button-row">
-            {generateButtonMatrix().slice(10, 15)}
+      <div className="user-container">
+        <button className="user-image">
+          <img src={userImage} alt="User Icon" />
+        </button>
+      </div>
+
+      <div className="conversation-container">
+        <ConversationWindow messages={messages} />
+      </div>
+
+      <div className="entry-box-container">
+        <InputSection
+          attachedFiles={attachedFiles}
+          setAttachedFiles={setAttachedFiles}
+          prompt={prompt} // Pass the transcribed prompt
+          setPrompt={setPrompt}
+          onPromptSubmit={(prompt) => {
+            const newMessage = { text: prompt, isUser: true };
+            setMessages([...messages, newMessage]);
+            handleSendMessage(prompt);
+          }}
+          onFileUpload={(file) => console.log('File uploaded:', file.name)}
+          onCopyConversation={() => navigator.clipboard.writeText(messages.map(m => m.text).join('\n'))}
+        />
+      </div>
+
+      {/* Expert Edit Popup */}
+      {showEditPopup && (
+        <div className="overlay">
+          <div className="edit-popup">
+            <h4>Edit Expert</h4>
+            <input
+              type="text"
+              value={newExpertName}
+              onChange={(e) => setNewExpertName(e.target.value)}
+            />
+            <button onClick={handleSaveExpertName}>Save</button>
+            <button onClick={() => setShowEditPopup(false)}>Cancel</button>
           </div>
         </div>
-
-        <div className="right-buttons">
-          <button className="right-button">Edit TTS</button>
-          <button className="right-button">Edit Vision (Coming Soon!)</button>
-          <div className="dropdown">
-            <select value={selectedOption} onChange={handleOptionChange}>
-              <option value="GPT-4o">GPT-4o</option>
-              <option value="Google Gemini">Google Gemini</option>
-              <option value="Claude">Claude</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-export default MyUI;
+// Console Component
+function Console({ 
+  experts, 
+  handleEditExpertClick,
+  conversationHistory,
+  handleRestoreConversation, 
+  volume, 
+  setVolume, 
+  handleStartListening, 
+  handleStopListening,
+  isListening ,
+  handleLLMSelection,
+  currentLLM,
+  toggleTTS,
+  isTTSEnabled
+}) {
+  const [currentView, setCurrentView] = useState("default");
+  const options = ["Text-To-Speech", "Speech Recognition", "LLM Selection", "Update Experts", "Conversation Select"];
+  const [currentOptionIndex, setCurrentOptionIndex] = useState(0);
+
+  const handleSelectOption = () => {
+    setCurrentView(options[currentOptionIndex]);
+  };
+
+  const handleBack = () => {
+    setCurrentView("default");
+  };
+
+  const handleScroll = (direction) => {
+    if (direction === 'up') {
+      setCurrentOptionIndex((prev) => (prev === 0 ? options.length - 1 : prev - 1));
+    } else {
+      setCurrentOptionIndex((prev) => (prev === options.length - 1 ? 0 : prev + 1));
+    }
+  };
+
+  return (
+    <div className="console-container">
+  {currentView === "default" ? (
+    <div className="settings-grid">
+      <div className="settings-display">
+        <div className="console-option">
+          {options[currentOptionIndex]}
+        </div>
+      </div>
+      <div className="settings-buttons">
+        <button onClick={() => handleScroll('up')} className="up-arrow">▲</button>
+        <button onClick={handleSelectOption} className="select-button">Select</button>
+        <button onClick={() => handleScroll('down')} className="down-arrow">▼</button>
+      </div>
+      {/* Volume Slider */}
+      <div className="volume-slider-container">
+        <span className="volume-label">Volume Level:</span>
+        <input
+          type="range"
+          className="volume-slider"
+          min="0"
+          max="100"
+          value={volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+        />
+        <span className="volume-level">{volume}</span>
+      </div>
+    </div>
+      ) : (
+        <div className="settings-content">
+          <h3>{currentView}</h3>
+          <div className="settings-page-content">
+            {currentView === "Text-To-Speech" && (
+              <>
+                <p>Enable or disable Text-to-Speech:</p>
+                <button onClick={toggleTTS} className={`tts-button ${isTTSEnabled ? 'tts-enabled' : 'tts-disabled'}`}>
+                  {isTTSEnabled ? "Disable TTS" : "Enable TTS"}
+                </button>
+                {/* Volume Slider for Text-To-Speech */}
+                <div className="volume-slider-container">
+                  <span className="volume-label">TTS Volume:</span>
+                  <input
+                    type="range"
+                    className="volume-slider"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={(e) => setVolume(Number(e.target.value))}
+                  />
+                  <span className="volume-level"> {volume}</span>
+                </div>
+              </>
+            )}
+            {currentView === "Speech Recognition" && (
+              <>
+                <p>Control Speech Recognition:</p>
+                <button onClick={isListening ? handleStopListening : handleStartListening}>
+                  {isListening ? "Stop Recording" : "Start Recording"}
+                </button>
+              </>
+            )}
+            {currentView === "LLM Selection" && (
+              <>
+                <p>Select Language Model:</p>
+                <select
+                  className="llm-dropdown"
+                  value={currentLLM || ""}
+                  onChange={(e) => handleLLMSelection(e.target.value)}
+                >
+                  <option value="" disabled>Select an LLM</option>
+                  <option value="ChatGPT">ChatGPT</option>
+                  <option value="Google Gemini">Google Gemini</option>
+                  <option value="Anthropic Claude">Anthropic Claude</option>
+                </select>
+              </>
+            )}
+            {currentView === "Update Experts" && (
+              <div className="expert-grid">
+                {experts.map((expert, index) => (
+                  <button key={index} className="expert-button" onClick={() => handleEditExpertClick(index)}>
+                    {expert}
+                  </button>
+                ))}
+              </div>
+            )}
+            {currentView === "Conversation Select" && (
+              <>
+                <p>Select a conversation to review:</p>
+                <div className="conversation-history">
+                  {conversationHistory.length > 0 ? (
+                    conversationHistory.map((conv, index) => (
+                      <div
+                        key={index}
+                        className="conversation-item"
+                        onClick={() => handleRestoreConversation(conv.conversation_text)}
+                      >
+                        {`${conv.user_id}'s Conversation ${new Date(conv.timestamp).toLocaleString()}`}
+                      </div>
+                    ))
+                  ) : (
+                    <p>No conversation history available.</p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          <button onClick={handleBack} className="back-button">Back</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ConversationWindow Component
+function ConversationWindow({ messages }) {
+  const conversationRef = useRef(null);
+
+  useEffect(() => {
+    if (conversationRef.current) {
+      console.log("Updated messages:", messages);
+      conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  return (
+    <div className="conversation-window" ref={conversationRef}>
+        {messages.map((message, index) => (
+            <div
+                key={index}
+                className={`message-bubble ${message.isUser ? 'user-message' : 'ai-message'}`}
+            >
+                {/* Display text if present */}
+                {message.text && <p>{message.text}</p>}
+                
+                {/* Display images if present, or skip if none */}
+                {message.images && message.images.length > 0 && message.images.map((img, imgIndex) => (
+                    <img
+                        key={imgIndex}
+                        src={img.url}
+                        alt="AI response"
+                        className="ai-image-response"
+                        style={{ maxWidth: '100%', marginTop: '10px', borderRadius: '8px' }}
+                    />
+                ))}
+            </div>
+        ))}
+    </div>
+);
+}
+
+// InputSection Component
+function InputSection({ prompt, setPrompt, onPromptSubmit, onFileUpload, onCopyConversation, attachedFiles, setAttachedFiles }) {
+
+  const handleInputChange = (e) => {
+    setPrompt(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+  
+    if (attachedFiles.length + files.length > 5) {
+      alert("You can only attach up to 5 files at a time.");
+      return;
+    }
+  
+    const newFiles = files.map((file) => {
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          file.preview = e.target.result; // Add preview data to the file object
+          setAttachedFiles((prev) => [...prev]); // Trigger a re-render
+        };
+        reader.readAsDataURL(file);
+      }
+      return file;
+    });
+
+    setAttachedFiles((prev) => [...prev, ...newFiles]);
+    files.forEach((file) => onFileUpload(file));
+  };
+
+  const handleRemoveFile = (index) => {
+    const updatedFiles = attachedFiles.filter((_, i) => i !== index);
+    setAttachedFiles(updatedFiles);
+  };
+
+  const handleBlur = (e) => {
+    if (prompt === "") {
+      e.target.style.height = "20px";
+    }
+  };
+
+  return (
+    <div className="input-section">
+      {/* Display file popups above the entry bar */}
+      <div className="attached-files-container">
+        {attachedFiles.map((file, index) => (
+          <div key={index} className="attached-file-popup">
+            {file.preview ? (
+              <img src={file.preview} alt={file.name} className="attached-file-image" />
+            ) : (
+              <span>{file.name}</span>
+            )}
+            <button onClick={() => handleRemoveFile(index)} className="remove-file-button">✕</button>
+          </div>
+        ))}
+      </div>
+      
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        onBlur={handleBlur}
+        className="prompt-input"
+        placeholder="Type your message here..."
+        rows={1}
+        style={{ height: "20px" }}
+      />
+      <button onClick={() => onPromptSubmit(prompt)}>Submit</button>
+      <button onClick={onCopyConversation}>Copy Conversation</button>
+      <button onClick={() => document.getElementById('file-upload').click()}>Upload File</button>
+      <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileUpload} />
+    </div>
+  );
+}
+
+export default MultiChatXpertPage;

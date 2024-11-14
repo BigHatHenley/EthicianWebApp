@@ -15,16 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import index, health_check
+from . import views
+from .views import index, health_check, analyze_text
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('api/analyze_text/', views.analyze_text, name='analyze_text'),
+    path('api/save_conversation/', views.save_conversation, name='save_conversation'),
+    path('api/get_conversations/', views.get_conversations, name='get_conversations'),
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='index.html')),
     path('', index, name='index'),
-    path('health/', health_check, name='health_check')
+    path('health/', health_check, name='health_check'),
 ]
 
 if settings.DEBUG:

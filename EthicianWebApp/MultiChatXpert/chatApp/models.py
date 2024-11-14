@@ -1,5 +1,6 @@
 # models.py
 from django.db import models
+from django.conf import settings
 
 class UploadedFileModel(models.Model):
     file = models.FileField(upload_to='uploads/')
@@ -14,6 +15,9 @@ class UserAccount(models.Model):
     password = models.CharField(max_length=255)
 
 class Conversation(models.Model):
-    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     conversation_text = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user_id}'s Conversation on {self.timestamp}"

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import pymongo
+from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 
@@ -30,7 +31,14 @@ SECRET_KEY = 'django-insecure-n#9@n@wo!px@0&w-d7^&!qt0oh=!3s(@v*15wlpqcoyq_6m*f0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', 
+    '127.0.0.1', 
+    'ethicianwebapp.onrender.com', 
+    'ethician-django.onrender.com', 
+    'ethician-react.onrender.com', 
+    'aiethician.com',
+    'www.aiethician.com'
+    ]
 
 
 # Application definition
@@ -61,20 +69,26 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:8000",
     "http://localhost:8080",
     "http://localhost:10000",
     "https://ethicianwebapp.onrender.com",
     "https://ethician-django.onrender.com",
-    "https://ethician-react.onrender.com"
-    #"aiethician.com"
+    "https://ethician-react.onrender.com",
+    #"aiethician.com",
+    #"www.aiethician.com",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://ethician-frontend.onrender.com',
     'https://ethician-django.onrender.com',
-    'https://ethicianwebapp.onrender.com'
+    'https://ethicianwebapp.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'https://199c-2601-702-0-9480-988c-b43-9c08-63d1.ngrok-free.app'
 ]
-
 ROOT_URLCONF = 'chatApp.urls'
 
 TEMPLATES = [
@@ -99,24 +113,29 @@ WSGI_APPLICATION = 'chatApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.dummy',  # Placeholder, since we're not using Django's ORM
-        'NAME': 'your_database_name',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.dummy',  # Placeholder, since we're not using Django's ORM
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
 
 # Initialize MongoDB connection
-mongo_client = pymongo.MongoClient(MONGO_URI)
+mongo_client = MongoClient(MONGO_URI)
 mongo_db = mongo_client[MONGO_DB_NAME]
+
+# Define the DB_COLLECTION setting for session storage
+DB_COLLECTION = mongo_db['mongo_sessions']  # Name the collection where sessions will be stored
 
 # Add to settings
 SETTINGS = {
     'MONGO_DB': mongo_db,
 }
+
+SESSION_ENGINE = 'mongo_sessions.session'  # Use mongo_sessions for session storage
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

@@ -6,7 +6,7 @@ import './HomePage.css'; // Import CSS file for styling
 // Components for other pages
 import AboutPage from './components/AboutPage';
 import PricingPage from './components/PricingPage';
-import MyUI from './components/MultiChatXpertPage';
+import MultiChatXpertPage from './components/MultiChatXpertPage';
 import Navbar from './components/Navbar';
 import LoginForm from './components/LoginForm';
 import SignUpForm from './components/SignUpForm';
@@ -35,7 +35,7 @@ function HomePage() {
         <Route path="/" element={<HomePageUI />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/multichatxpert" element={<MyUI />} />
+        <Route path="/multichatxpert" element={<MultiChatXpertPage />} />
         <Route path="/login-form" element={<LoginForm />} />
         <Route path="/signup" element={<SignUpForm />} />
       </Routes>

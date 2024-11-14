@@ -1,17 +1,26 @@
 from django.http import JsonResponse
 from .PromptAPICalls.sendTextPrompt import textPrompt
 from .PromptAPICalls.sendMediaPrompt import mediaPrompt
-from .PromptAPICalls.fileSaving import save_and_process_file
+from .PromptAPICalls.fileHandling import fileUpload
 from .models import UploadedFileModel  # Import UploadedFile model
+from .models import Conversation
+from .serializers import ConversationSerializer
+from django.utils.timezone import now
+from django.middleware.csrf import get_token
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 import json
 from django.shortcuts import render
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserAccountSerializer
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 import datetime
@@ -79,13 +88,32 @@ def add_conversation(user_id, conversation_text):
     }
     conversation_collection.insert_one(conversation_data)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def save_conversation(request):
-    if request.method == 'POST':
-        user_id = request.POST['user_id']
-        conversation_text = request.POST['conversation_text']
-        add_conversation(user_id, conversation_text)
-        return HttpResponse("Conversation saved successfully!")
-    return render(request, 'conversation.html')
+    user = request.user
+    conversation_text = request.data.get("conversation_text", "")
+    timestamp = now()
+
+    if conversation_text:
+        conversation = Conversation.objects.create(
+            user_id=user,
+            conversation_text=conversation_text,
+            timestamp=timestamp
+        )
+        return Response({"message": "Conversation saved successfully!"}, status=status.HTTP_201_CREATED)
+    return Response({"error": "Conversation text is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_conversations(request):
+    csrf_token = get_token(request)
+    print("CSRF Token:", csrf_token)
+    user = request.user
+    conversations = Conversation.objects.filter(user_id=user).order_by('-timestamp')
+    serializer = ConversationSerializer(conversations, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 def index(request):
     return render(request, 'index.html')
@@ -93,56 +121,67 @@ def index(request):
 #===========================================================
 #===================== LLM Interactions ====================
 #===========================================================
+import logging
+logger = logging.getLogger(__name__)
 
+@csrf_exempt
+
+@api_view(['POST', 'GET'])
+@permission_classes([AllowAny])  # Adjust permissions as needed
 def analyze_text(request):
-    print("Processing POST request to 'chatApp' endpoint")
+    logger.info("Request received at analyze_text endpoint.")
+    print("Processing POST request to 'analyze_text' endpoint")
+
     if request.method == 'POST':
-        text = request.POST.get('text', '')
-        uploaded_file = request.FILES.get('file')
-        selected_experts = request.POST.get('selected_experts', '[]')  # Get selected experts as JSON string
-        currentLLM = request.POST.get('selected_option')
-
         try:
-            selected_experts = json.loads(selected_experts)  # Parse JSON string to list
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid selected_experts data'}, status=400)
+            # Retrieve data from request
+            text = request.POST.get('text', '')
+            selected_experts = json.loads(request.POST.get('selected_experts', '[]')) or []
+            currentLLM = request.POST.get('selected_option', None)
+            uploaded_files = request.FILES.getlist('file')
 
-        num_active_experts = len(selected_experts)
+            # Log inputs for debugging
+            print(f"Text: {text}")
+            print(f"Selected Experts: {selected_experts}")
+            print(f"Current LLM: {currentLLM}")
+            print(f"Number of Files: {len(uploaded_files)}")
 
-        if num_active_experts == 0:
-            prompt = text
-        
-        if uploaded_file:
-            file_data = save_and_process_file(uploaded_file, UploadedFileModel)
-            if file_data:
-                result = mediaPrompt(prompt, currentLLM, file_data)
+            # Process file uploads if any
+            file_data = []
+            if uploaded_files:
+                for file in uploaded_files:
+                    file_info = fileUpload(file)
+                    print(f"Processed file info: {file_info}")  # Log processed file data
+                    file_data.append(file_info)
+
+                # Use `mediaPrompt` to handle text with file data
+                result = mediaPrompt(text, selected_experts, currentLLM, file_data)
             else:
-                # Handle error condition where file saving failed
-                result = "Error processing file"
-        else:
-            result = textPrompt(prompt, currentLLM)
-        
-        print(result)
-        
-        request.session['output'] = result
+                # Use `textPrompt` if no files are uploaded
+                result = textPrompt(text, currentLLM, selected_experts)
 
-        # Ensure that result is a JSON serializable object
-        if isinstance(result, dict) or isinstance(result, list):
-            print("Is serializable")
-            return JsonResponse(result)  # Return JSON serializable data directly
-        else:
-            print("Not Serializable")
-            return JsonResponse({'error': 'Result is not JSON serializable'}, status=400)
+            # Ensure result is a dictionary for consistent JSON response structure
+            if not isinstance(result, dict):
+                result = {'output': result}
+
+            # Store result in session for later retrieval and return it
+            request.session['output'] = json.dumps(result)  # Store as JSON string for consistency
+            print("Returning response in views.py:", result)
+            return JsonResponse(result)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except Exception as e:
+            # General exception logging for any other unforeseen errors
+            print(f"Unexpected error: {e}")
+            return JsonResponse({'error': str(e)}, status=500)
 
     elif request.method == 'GET':
-        print("Got to GET")
-        result = request.session.get('output', None)
-        print("Result IS", result)
-        
-        if result is not None:
-            return JsonResponse({'result': result})  # Return the result if available
+        # Retrieve the latest response from the session for GET requests
+        result = request.session.get('output')
+        if result:
+            return JsonResponse(json.loads(result))  # Load from JSON string
         else:
             return JsonResponse({'error': 'No prompt result available'}, status=400)
 
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
