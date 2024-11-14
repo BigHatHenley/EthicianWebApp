@@ -14,6 +14,7 @@ from pathlib import Path
 import pymongo
 from pymongo import MongoClient
 import os
+import ssl
 from dotenv import load_dotenv
 import certifi
 
@@ -125,7 +126,12 @@ MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
 
 # Initialize MongoDB connection
-mongo_client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
+mongo_client = MongoClient(
+    MONGO_URI,
+    ssl=True,
+    ssl_cert_reqs=ssl.CERT_REQUIRED,
+    tlsCAFile=certifi.where(),
+)
 mongo_db = mongo_client[MONGO_DB_NAME]
 
 # Define the DB_COLLECTION setting for session storage
