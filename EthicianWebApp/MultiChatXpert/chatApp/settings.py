@@ -141,17 +141,13 @@ import logging
 MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
 
-try:
-    mongo_client = MongoClient(
-        MONGO_URI,
-        tls=True,
-        tlsCAFile=certifi.where()
-    )
-    mongo_db = mongo_client[MONGO_DB_NAME]
-    DB_COLLECTION = mongo_db['mongo_sessions']
-except Exception as e:
-    logging.error(f"Error connecting to MongoDB: {e}")
-    raise
+mongo_client = MongoClient(
+    MONGO_URI,
+    ssl=True,
+    ssl_cert_reqs=ssl.CERT_NONE,
+)
+mongo_db = mongo_client[MONGO_DB_NAME]
+DB_COLLECTION = mongo_db['mongo_sessions']
 
 # Add to settings
 SETTINGS = {
