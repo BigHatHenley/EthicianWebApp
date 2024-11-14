@@ -136,7 +136,6 @@ LOGGING = {
     },
 }
 
-import logging
 
 MONGO_DB_NAME = 'EthicianTestCluster1'
 MONGO_URI = os.getenv('MONGO_URI')
