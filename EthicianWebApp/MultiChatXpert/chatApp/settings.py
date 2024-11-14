@@ -143,8 +143,8 @@ MONGO_URI = os.getenv('MONGO_URI')
 
 mongo_client = MongoClient(
     MONGO_URI,
-    ssl=True,
-    ssl_cert_reqs=ssl.CERT_NONE,
+    tls=True,
+    tlsAllowInvalidCertificates=True
 )
 mongo_db = mongo_client[MONGO_DB_NAME]
 DB_COLLECTION = mongo_db['mongo_sessions']
