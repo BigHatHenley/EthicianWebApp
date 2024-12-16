@@ -1,0 +1,59 @@
+/* Universal Body and HTML Setup */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100%; /* Allow content to extend beyond the viewport */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Page Wrapper */
+.hlb-overview-page {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Allow content to grow beyond the viewport */
+  padding-top: 60px; /* Offset for fixed navbar */
+  box-sizing: border-box; /* Include padding in height calculations */
+  background-color: #f0f0f0; /* Fallback background color */
+}
+
+/* Glassmorphic Container */
+.glassmorphic-container {
+  flex: 1; /* Allow it to grow to fill available space */
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  margin: 20px auto; /* Center the container horizontally */
+  max-width: 800px; /* Restrict width for readability */
+  text-align: center;
+  color: #333; /* Default font color for readability */
+  margin-top: 20px; /* Add small gap below the navbar */
+}
+
+/* Headings and Text */
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+p {
+  font-size: 1.2em;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Mega Footer */
+.mega-footer {
+  flex-shrink: 0; /* Prevent footer from shrinking */
+  width: 100%; /* Full width of the page */
+  background-color: #333; /* Footer background */
+  color: #fff; /* Footer text color */
+  text-align: center;
+  padding: 20px 0;
+}
