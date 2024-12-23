@@ -4,6 +4,9 @@ import userImage from './images/personTyping.gif';
 import aiImage from './images/AILooking.gif';
 import axios from 'axios';
 import Bowser from "bowser";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faClipboard, faPaperclip } from '@fortawesome/free-solid-svg-icons';
+
 
 function MultiChatXpertPage() {
   const [messages, setMessages] = useState([]);
@@ -14,6 +17,8 @@ function MultiChatXpertPage() {
     "Robotics Engineer", "Electrical Engineer", "Civil Engineer", "Software Engineer", "Chemical Engineer",
     "Aerospace Engineer", "Petroleum Engineer", "Biomedical Engineer", "Environment Engineer", "Quality Engineer"
   ]);
+  const [availableExperts, setAvailableExperts] = useState(['Expert 1', 'Expert 2', 'Expert 3', 'Expert 4', 'Expert 5', 'Expert 6', 'Expert 7']);
+  const [currentExpert, setCurrentExpert] = useState('Expert 1');
   const [selectedExperts, setSelectedExperts] = useState([]);
   const [currentLLM, setCurrentLLM] = useState(null);
   const [showEditPopup, setShowEditPopup] = useState(false); // Track if edit popup is open
@@ -32,8 +37,10 @@ function MultiChatXpertPage() {
   const isFirefox = browser.getBrowserName() === "Firefox";
 
   const [conversationHistory, setConversationHistory] = useState([]);
+  const [activeConversationId, setActiveConversationId] = useState(null);
+  const [newConversationText, setNewConversationText] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Assume initially logged out
-
+  const [postCount, setPostCount] = useState(0);
   const [attachedFiles, setAttachedFiles] = useState([]);  // <-- Define attachedFiles here
 
   useEffect(() => {
@@ -129,6 +136,14 @@ function MultiChatXpertPage() {
     console.log("Updated currentLLM:", llm);  // Log after update
   };
 
+  const handleExpertChange = (newExpert) => {
+    if (!isLoggedIn) {
+      alert('Please log in to change experts.');
+      return;
+    }
+    setCurrentExpert(newExpert);
+  };
+
   const handleEditExpertClick = (index) => {
     setCurrentExpertEdit(index);
     setNewExpertName(experts[index]);
@@ -154,6 +169,22 @@ function MultiChatXpertPage() {
     return null;
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+
+    // Restrict experts for logged-out users
+    if (!token) {
+      setAvailableExperts(availableExperts.slice(0, 5)); // Limit to 5 experts
+    } else {
+        setAvailableExperts([
+            "Ethician", "Mechanical Engineer", "Metallurgist", "Safety Engineer", "Materials Engineer",
+            "Robotics Engineer", "Electrical Engineer", "Civil Engineer", "Software Engineer", "Chemical Engineer",
+            "Aerospace Engineer", "Petroleum Engineer", "Biomedical Engineer", "Environment Engineer", "Quality Engineer"
+        ]);
+    }
+  }, []);
+
   const handleRestoreConversation = (conversationText) => {
     // Assuming conversationText is newline-delimited for each message
     const restoredMessages = conversationText.split('\n').map((text, idx) => ({
@@ -162,9 +193,89 @@ function MultiChatXpertPage() {
     }));
     setMessages(restoredMessages);
   };
+
+  const handleConversationSelect = async (conversationId) => {
+    if (!isLoggedIn) {
+        alert("You need to log in to view saved conversations.");
+        return;
+    }
+
+    try {
+        const response = await axios.get(
+            `https://ethician-django.onrender.com/api/get_conversation/${conversationId}/`,
+            {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            }
+        );
+
+        if (response.status === 200) {
+            const conversation = response.data;
+            setActiveConversationId(conversationId);
+            handleRestoreConversation(conversation.conversation_text);
+        }
+    } catch (error) {
+        console.error("Error fetching conversation:", error);
+    }
+};
+
+  const handleCreateConversation = async (conversationText) => {
+    if (!isLoggedIn) {
+        alert("Log in to save conversations.");
+        return;
+    }
+
+    try {
+        const response = await axios.post(
+            "https://ethician-django.onrender.com/api/save_conversation/",
+            { conversation_text: conversationText },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            }
+        );
+
+        if (response.status === 201) {
+            console.log("Conversation saved successfully!");
+        }
+    } catch (error) {
+        console.error("Error saving conversation:", error);
+    }
+};
+
+  const handleSubmit = async () => {
+    if (!isLoggedIn && postCount >= 10) {
+      alert('You have reached the maximum number of free requests. Please log in to continue.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/analyze_text/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(isLoggedIn && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({ text: 'Your prompt here', selected_experts: [currentExpert] }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Response:', data);
+      setPostCount(postCount + 1); // Increment the post count for logged-out users
+    } else {
+      console.error('Request failed');
+    }
+  };
   
 
   const handleSendMessage = async (message) => {
+    if (!isLoggedIn && postCount >= 10) {
+      alert("You have reached the maximum number of free requests. Please log in to continue.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("text", message);
     formData.append("selected_experts", JSON.stringify(selectedExperts));
@@ -198,7 +309,8 @@ function MultiChatXpertPage() {
         // Update the messages array with the text response
         setMessages((prevMessages) => [
             ...prevMessages,
-            { text: aiResponseText, isUser: false }
+            { text: message, isUser: true },
+            { text: aiResponseText, isUser: false },
         ]);
 
         // Trigger TTS if enabled
@@ -209,14 +321,13 @@ function MultiChatXpertPage() {
             const fullConversation = messages
                 .map((msg) => msg.text || msg.images?.[0]?.url || "")
                 .join('\n');
-            await axios.post(
-                'https://ethician-django.onrender.com/api/save_conversation/',
-                { conversation_text: fullConversation },
-                {
-                    headers: { 'X-CSRFToken': getCsrfToken() },
-                    withCredentials: true,
-                }
-            );
+
+            await handleCreateConversation(fullConversation);
+        }
+
+        // Increment POST count for logged-out users
+        if (!isLoggedIn) {
+          setPostCount(postCount + 1);
         }
     } catch (error) {
         console.error('Error sending message to backend:', error);
@@ -266,6 +377,7 @@ function MultiChatXpertPage() {
         experts={experts}
         conversationHistory={conversationHistory}
         handleRestoreConversation={handleRestoreConversation}
+        handleConversationSelect={handleConversationSelect}
         handleEditExpertClick={handleEditExpertClick}
         volume={volume}
         setVolume={setVolume}
@@ -330,6 +442,7 @@ function Console({
   handleEditExpertClick,
   conversationHistory,
   handleRestoreConversation, 
+  handleConversationSelect,
   volume, 
   setVolume, 
   handleStartListening, 
@@ -446,24 +559,24 @@ function Console({
               </div>
             )}
             {currentView === "Conversation Select" && (
-              <>
-                <p>Select a conversation to review:</p>
-                <div className="conversation-history">
-                  {conversationHistory.length > 0 ? (
-                    conversationHistory.map((conv, index) => (
-                      <div
-                        key={index}
-                        className="conversation-item"
-                        onClick={() => handleRestoreConversation(conv.conversation_text)}
-                      >
-                        {`${conv.user_id}'s Conversation ${new Date(conv.timestamp).toLocaleString()}`}
-                      </div>
-                    ))
-                  ) : (
-                    <p>No conversation history available.</p>
-                  )}
-                </div>
-              </>
+                <>
+                    <p>Select a conversation to review:</p>
+                    <div className="conversation-history">
+                        {conversationHistory.length > 0 ? (
+                            conversationHistory.map((conv, index) => (
+                                <div
+                                    key={index}
+                                    className="conversation-item"
+                                    onClick={() => handleConversationSelect(conv.id)} // Use `handleConversationSelect`
+                                >
+                                    {`${conv.user_id}'s Conversation ${new Date(conv.timestamp).toLocaleString()}`}
+                                </div>
+                            ))
+                        ) : (
+                            <p>No conversation history available.</p>
+                        )}
+                    </div>
+                </>
             )}
           </div>
           <button onClick={handleBack} className="back-button">Back</button>
@@ -579,10 +692,16 @@ function InputSection({ prompt, setPrompt, onPromptSubmit, onFileUpload, onCopyC
         rows={1}
         style={{ height: "20px" }}
       />
-      <button onClick={() => onPromptSubmit(prompt)}>Submit</button>
-      <button onClick={onCopyConversation}>Copy Conversation</button>
-      <button onClick={() => document.getElementById('file-upload').click()}>Upload File</button>
+      <button onClick={onCopyConversation} className="icon-button">
+        <FontAwesomeIcon icon={faClipboard} />
+      </button>
+      <button onClick={() => document.getElementById('file-upload').click()} className="icon-button">
+        <FontAwesomeIcon icon={faPaperclip} />
+      </button>
       <input type="file" id="file-upload" style={{ display: 'none' }} onChange={handleFileUpload} />
+      <button onClick={() => onPromptSubmit(prompt)} className="icon-button">
+      <FontAwesomeIcon icon={faArrowUp} />
+      </button>
     </div>
   );
 }

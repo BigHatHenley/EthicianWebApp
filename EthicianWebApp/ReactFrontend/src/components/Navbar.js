@@ -34,55 +34,32 @@ function Navbar() {
         </NavLink>
       </div>
       <ul className="navbar-list">
-        <li
-          className="navbar-item dropdown"
-          onMouseEnter={() => toggleDropdown('ethician')}
-          onMouseLeave={() => toggleDropdown(null)}
-        >
-          <button>ETHICIAN</button>
-          {activeDropdown === 'ethician' && (
-            <ul className="dropdown-menu">
-              <li><NavLink to="/ethician-overview">Overview</NavLink></li>
-              <li><NavLink to="/ethician-enterprise">Enterprise</NavLink></li>
-              <li><NavLink to="/ethician-api">API</NavLink></li>
-              <li><NavLink to="/ethician-pricing">Pricing</NavLink></li>
-            </ul>
-          )}
+        {/* Products Button */}
+        <li className="navbar-item">
+          <NavLink to="/ethician-overview" className="navbar-link">
+            Products
+          </NavLink>
         </li>
-        <li
-          className="navbar-item dropdown"
-          onMouseEnter={() => toggleDropdown('research')}
-          onMouseLeave={() => toggleDropdown(null)}
-        >
-          <button>Research</button>
-          {activeDropdown === 'research' && (
-            <ul className="dropdown-menu">
-              <li><NavLink to="/research-overview">Overview</NavLink></li>
-              <li><NavLink to="/research-coherence">Coherence & Decoherence</NavLink></li>
-              <li><NavLink to="/research-quantum-computing">Quantum Computing</NavLink></li>
-              <li><NavLink to="/research-crypto">E-Coin</NavLink></li>
-            </ul>
-          )}
+
+        {/* Research Button */}
+        <li className="navbar-item">
+          <NavLink to="/research-overview" className="navbar-link">
+            Research
+          </NavLink>
         </li>
-        <li
-          className="navbar-item dropdown"
-          onMouseEnter={() => toggleDropdown('company')}
-          onMouseLeave={() => toggleDropdown(null)}
-        >
-          <button>Company</button>
-          {activeDropdown === 'company' && (
-            <ul className="dropdown-menu">
-              <li><NavLink to="/overview">Company Overview</NavLink></li>
-              <li><NavLink to="/goals">Our Goals</NavLink></li>
-              <li><NavLink to="/governance">Governance</NavLink></li>
-              <li><NavLink to="/news">Company News</NavLink></li>
-            </ul>
-          )}
+
+        {/* Company Button */}
+        <li className="navbar-item">
+          <NavLink to="/overview" className="navbar-link">
+            Company
+          </NavLink>
         </li>
+
+        {/* Roadmaps Dropdown */}
         <li
           className="navbar-item dropdown"
-          onMouseEnter={() => toggleDropdown('roadmaps')}
-          onMouseLeave={() => toggleDropdown(null)}
+          onMouseEnter={() => setActiveDropdown('roadmaps')}
+          onMouseLeave={() => setActiveDropdown(null)}
         >
           <button>Roadmaps</button>
           {activeDropdown === 'roadmaps' && (
@@ -92,8 +69,12 @@ function Navbar() {
             </ul>
           )}
         </li>
+
+        {/* MultiChatXpert Link */}
         <li className="navbar-item">
-          <NavLink to="/multichatxpert">MultiChatXpert</NavLink>
+          <NavLink to="/multichatxpert" className="navbar-link">
+            MultiChatXpert
+          </NavLink>
         </li>
       </ul>
     </nav>

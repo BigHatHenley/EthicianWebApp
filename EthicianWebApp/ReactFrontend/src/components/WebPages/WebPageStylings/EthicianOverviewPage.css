@@ -1,57 +1,140 @@
-/* Universal Body and HTML Setup */
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  height: 100%; /* Ensure full height for proper flex behavior */
-}
-
-/* Page Wrapper */
+/* General Styles for the Page */
 .ethician-overview-page {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  min-height: 100vh; /* Ensure the page stretches to full viewport height */
-  background-color: #f0f0f0; /* Fallback background color */
-}
-
-/* Glassmorphic Container */
-.glassmorphic-container {
-  flex: 1; /* Allow this section to grow and take available space */
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin: 20px auto;
-  max-width: 800px;
-  text-align: center;
-  color: #333;
-}
-
-/* Headings and Text */
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-h2 {
-  font-size: 2em;
-  margin-bottom: 15px;
-  color: #444;
-}
-
-p {
-  font-size: 1.2em;
+  font-family: Arial, sans-serif;
   line-height: 1.6;
   color: #333;
+  margin: 0;
+  padding: 0;
+  padding-top: 40px;
+  background-image: url('../../images/RetroFactory.png');
+  background-size: cover; /* Ensures the image covers the entire container */
+  background-position: center;
+  position: relative; /* Needed for positioning the overlay */
+  min-height: 100vh; /* Ensure full viewport height */
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+}
+
+.ethician-overview-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35); /* Black overlay with 50% transparency */
+  z-index: 1; /* Lower than the content */
+  pointer-events: none; /* Allows interaction with elements above the overlay */
+}
+
+.ethician-overview-page .container {
+  position: relative; /* Ensure it appears above the overlay */
+  z-index: 2; /* Ensures the container content is above the overlay */
+  padding: 40px;
+  margin: 0 auto;
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+/* Section-Specific Styles */
+.ethician-overview-page .multichatxpert-section {
+  background: linear-gradient(135deg, #f4e8c1, #fef8e0);
+  padding-top: 40px;
+}
+
+.ethician-overview-page .ethician-framework-section {
+  background: linear-gradient(135deg, #d1e8f0, #e0f7fa);
+}
+
+.ethician-overview-page .api-section {
+  background: linear-gradient(135deg, #e0d4f3, #f3e6fc);
+}
+
+.ethician-overview-page .e-coin-section {
+  background: linear-gradient(135deg, #cfe8d1, #eaf7e0);
+}
+
+/* Typography */
+.ethician-overview-page h1 {
+  font-size: 2.5rem;
+  color: #222;
   margin-bottom: 20px;
 }
 
-/* Mega Footer */
-.mega-footer {
+.ethician-overview-page h2 {
+  font-size: 2rem;
+  color: #444;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.ethician-overview-page h3 {
+  position: relative; /* Needed to ensure it appears above the overlay */
+  z-index: 2; /* Ensures the container content is above the overlay */
+  max-width: 70%;
+  margin-left: 13%;
+  padding: 50px;
+  text-align: center;
+  color: white;
+}
+
+.ethician-overview-page p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Pricing Styles */
+.ethician-overview-page .pricing-category {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ethician-overview-page .pricing-category h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.ethician-overview-page .pricing-category ul {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.ethician-overview-page .pricing-category ul li {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.ethician-overview-page .pricing-category ul li strong {
+  color: #222;
+}
+
+.ethician-overview-page .pricing-category ul ul {
+  list-style-type: disc;
+  padding-left: 40px;
+}
+
+.ethician-overview-page .pricing-category ul ul li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+/* Utility Styles */
+.ethician-overview-page .container:last-child {
+  margin-bottom: 0;
+}
+
+.ethician-overview-page .mega-footer {
+  position: relative; /* Create stacking context explicitly */
+  z-index: 3; /* Higher than the overlay pseudo-element */
   flex-shrink: 0; /* Prevent footer from shrinking */
   width: 100%; /* Full width of the page */
   background-color: #333; /* Footer background */

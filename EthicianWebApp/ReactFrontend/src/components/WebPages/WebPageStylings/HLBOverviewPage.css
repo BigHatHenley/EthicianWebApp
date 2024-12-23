@@ -1,59 +1,159 @@
-/* Universal Body and HTML Setup */
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100%; /* Allow content to extend beyond the viewport */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-}
-
-/* Page Wrapper */
 .hlb-overview-page {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  min-height: 100vh; /* Allow content to grow beyond the viewport */
-  padding-top: 60px; /* Offset for fixed navbar */
-  box-sizing: border-box; /* Include padding in height calculations */
-  background-color: #f0f0f0; /* Fallback background color */
-}
-
-/* Glassmorphic Container */
-.glassmorphic-container {
-  flex: 1; /* Allow it to grow to fill available space */
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin: 20px auto; /* Center the container horizontally */
-  max-width: 800px; /* Restrict width for readability */
-  text-align: center;
-  color: #333; /* Default font color for readability */
-  margin-top: 20px; /* Add small gap below the navbar */
-}
-
-/* Headings and Text */
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 20px;
+  font-family: Arial, sans-serif;
   color: #333;
-}
-
-p {
-  font-size: 1.2em;
   line-height: 1.6;
-  color: #333;
+  padding: 0;
+  margin: 0;
+  position: relative; /* Needed for positioning the overlay */
+  min-height: 100vh; /* Ensure the page height includes the footer */
+  display: flex;
+  flex-direction: column; /* Allow footer to sit at the bottom */
+}
+
+.hlb-overview-page::before {
+  content: '';
+  position: absolute; /* Changed to absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Cover the entire page height */
+  background-image: url(../../images/RetroHLB.png); /* Background image */
+  background-size: cover; /* Ensure the background image covers the entire area */
+  background-position: center;
+  z-index: 1; /* Ensures the overlay sits below the content */
+}
+
+.hlb-overview-page::after {
+  content: '';
+  position: absolute; /* Changed to absolute */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Cover the entire page height */
+  background: rgba(0, 0, 0, 0.35); /* Black overlay with 50% transparency */
+  z-index: 2; /* Ensures the overlay sits above the background but below content */
+}
+
+.hlb-overview-page .container {
+  position: relative; /* Ensure content appears above the overlay */
+  z-index: 3;
+  padding: 50px;
+  margin: 0 auto;
+  max-width: 1200px;
+  text-align: left;
+  border-radius: 10px;
+  background: #fff; /* Default background color for sections */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
   margin-bottom: 20px;
 }
 
-/* Mega Footer */
-.mega-footer {
+
+/* Section-Specific Styles */
+.hlb-overview-page .overview-section {
+  margin-top: 40px;
+  background: linear-gradient(135deg, #f4e8c1, #fef8e0);
+}
+
+.hlb-overview-page .about-section {
+  background: linear-gradient(135deg, #d1e8f0, #e0f7fa);
+  margin-top: 20px;
+  display: block;
+}
+
+.hlb-overview-page .goals-section {
+  background: linear-gradient(135deg, #e0d4f3, #f3e6fc);
+}
+
+.hlb-overview-page .leadership-section {
+  background: linear-gradient(135deg, #cfe8d1, #eaf7e0);
+}
+
+.hlb-overview-page .website-announcement-section {
+  background: linear-gradient(135deg, #f4d9c1, #fdece0);
+}
+
+/* Typography */
+.hlb-overview-page h1 {
+  font-size: 2.5rem;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.hlb-overview-page h2 {
+  font-size: 2rem;
+  color: #444;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.hlb-overview-page p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.hlb-overview-page .news-date {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* List Styles */
+.hlb-overview-page ul {
+  list-style-type: disc;
+  margin-left: 40px;
+  margin-top: 20px;
+}
+
+.hlb-overview-page li {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.hlb-overview-page li strong {
+  font-weight: bold;
+  color: #222;
+}
+
+/* Utility Styles */
+.hlb-overview-page .container h1, .hlb-overview-page .container h2 {
+  text-align: left;
+}
+
+.hlb-overview-page .container p:last-child {
+  margin-bottom: 0;
+}
+
+.hlb-overview-page .mega-footer {
+  position: relative; /* Ensure the footer is properly positioned */
+  z-index: 3; /* Higher than the pseudo-elements */
   flex-shrink: 0; /* Prevent footer from shrinking */
   width: 100%; /* Full width of the page */
   background-color: #333; /* Footer background */
   color: #fff; /* Footer text color */
   text-align: center;
   padding: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hlb-overview-page .container {
+    padding: 30px;
+  }
+
+  .hlb-overview-page h1 {
+    font-size: 2rem;
+  }
+
+  .hlb-overview-page h2 {
+    font-size: 1.5rem;
+  }
+
+  .hlb-overview-page p, .hlb-overview-page li {
+    font-size: 1rem;
+  }
+}
+
+.hlb-overview-page .mega-footer li {
+  list-style-type: none;
 }

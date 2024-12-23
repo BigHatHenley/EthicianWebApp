@@ -3,19 +3,9 @@ import { Route, Routes, NavLink } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import MultiChatXpertPage from './components/MultiChatXpertPage';
 import LoginForm from './components/LoginForm';
-import EthicianAPIPage from './components/WebPages/EthicianAPIPage';
-import EthicianEnterprisePage from './components/WebPages/EthicianEnterprisePage';
 import EthicianOverviewPage from './components/WebPages/EthicianOverviewPage';
-import EthicianPricingPage from './components/WebPages/EthicianPricingPage';
-import HLBGoalsPage from './components/WebPages/HLBGoalsPage';
-import HLBGovernancePage from './components/WebPages/HLBGovernancePage';
-import HLBNewsPage from './components/WebPages/HLBNewsPage';
 import HLBOverviewPage from './components/WebPages/HLBOverviewPage';
-import ResearchAIConsciousnessPage from './components/WebPages/ResearchAIConsciousnessPage';
-import ResearchCoherencePage from './components/WebPages/ResearchCoherencePage';
-import ResearchCryptoPage from './components/WebPages/ResearchCryptoPage';
 import ResearchOverviewPage from './components/WebPages/ResearchOverviewPage';
-import ResearchQuantumComputingPage from './components/WebPages/ResearchQuantumComputingPage';
 import RoadmapEthicianPage from './components/WebPages/RoadmapEthicianPage';
 import RoadmapMCXPage from './components/WebPages/RoadmapMCXPage';
 import './HomePage.css';
@@ -25,24 +15,36 @@ import MegaFooter from './components/MegaFooter'; // Adjust the path if needed
 function HomePageContent() {
   return (
     <div className="homepage">
-      <div className="intro-section">
-        <h1>Welcome to HLB Technology</h1>
-        <p>
-          Empowering Ethical AI for a Better Future. Discover cutting-edge
-          AI solutions designed to align with humanity's best interests.
-        </p>
-        <NavLink to="/ethician-overview" className="cta-button">Explore ETHICIAN</NavLink>
-        <NavLink to="/multichatxpert" className="cta-button secondary">Try MultiChatXpert</NavLink>
+      {/* Intro Section */}
+      <div className="intro-section" >
+        <div className="hero-text">
+          <h1 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 100 }}>
+            Quantum-powered research for the ethical AI of the future
+          </h1>
+          <NavLink to="/ethician-overview" className="cta-button">Explore ETHICIAN</NavLink>
+          <NavLink to="/multichatxpert" className="cta-button secondary">Try MultiChatXpert</NavLink>
+        </div>
       </div>
 
-      <div className="about-section">
-        <h2>About Us</h2>
-        <p>
-          At HLB Technology, we combine innovation and ethical principles to create groundbreaking AI systems. Our mission is to lead the way in ethical AI alignment, ensuring technology serves humanity responsibly.
-        </p>
+      {/* About Section */}
+      <div className="about-section parallax" style={{ backgroundImage: `url('./components/images/RetroDay.png')` }}>
+        <div className="about-image"></div>
+        <div className="about-text">
+          <h2>About Us</h2>
+          <p>
+          At HLB Technology, we merge cutting-edge innovation with unwavering ethical principles to pioneer a new era of responsible AI. Guided by our mission to lead in ethical AI alignment, we develop groundbreaking systems that prioritize humanity’s well-being. From advanced conversational platforms like MultiChatXpert to ethically-aligned cryptocurrency solutions like E-Coin, our products are designed to address the challenges of the modern digital landscape while upholding trust, transparency, and accountability.
+          </p>
+          <p>
+          Our core philosophy centers on ensuring that AI serves humanity responsibly, empowering businesses and individuals with tools that are not only powerful but also aligned with the highest ethical standards. By integrating philosophical frameworks like Coherence/Decoherence and Quantum Consciousness into our AI models, we provide innovative solutions that inspire confidence and drive equitable outcomes.
+          </p>
+          <p>
+          As leaders in ethical AI, we are committed to shaping a future where technology is a force for good—bridging the gap between innovation and responsibility to create a better, more inclusive world.
+          </p>
+        </div>
       </div>
 
-      <div className="features-section">
+      {/* Features Section */}
+      <div className="features-section" >
         <h2>Our Solutions</h2>
         <div className="features-grid">
           <div className="feature-card">
@@ -64,35 +66,16 @@ function HomePageContent() {
             <p>
               Transform your business with AI solutions tailored for healthcare, education, and more, ensuring ethical alignment and innovation.
             </p>
-            <NavLink to="/ethician-enterprise">Explore Applications</NavLink>
+            <NavLink to="/ethician-overview">Explore Applications</NavLink>
           </div>
           <div className="feature-card">
             <h3>E-Coin</h3>
             <p>
               Our upcoming ethically focused cryptocurrency, E-Coin, ensures transparency, fairness, and sustainability in the financial world.
             </p>
-            <NavLink to="/research-crypto">Learn About E-Coin</NavLink>
+            <NavLink to="/research-overview">Learn About E-Coin</NavLink>
           </div>
         </div>
-      </div>
-
-      <div className="contact-section">
-        <h2>Contact Us</h2>
-        <form>
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" placeholder="Your Name" required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="Your Email" required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="message">Message</label>
-            <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
-          </div>
-          <button type="submit">Send</button>
-        </form>
       </div>
       <MegaFooter />
     </div>
@@ -107,19 +90,9 @@ function HomePage() {
         <Route path="/" element={<HomePageContent />} />
         <Route path="/multichatxpert" element={<MultiChatXpertPage />} />
         <Route path="/login-form" element={<LoginForm />} />
-        <Route path="/ethician-api" element={<EthicianAPIPage />} />
-        <Route path="/ethician-enterprise" element={<EthicianEnterprisePage />} />
         <Route path="/ethician-overview" element={<EthicianOverviewPage />} />
-        <Route path="/ethician-pricing" element={<EthicianPricingPage />} />
-        <Route path="/goals" element={<HLBGoalsPage />} />
-        <Route path="/governance" element={<HLBGovernancePage />} />
-        <Route path="/news" element={<HLBNewsPage />} />
         <Route path="/overview" element={<HLBOverviewPage />} />
-        <Route path="/research-ai-consciousness" element={<ResearchAIConsciousnessPage />} />
-        <Route path="/research-coherence" element={<ResearchCoherencePage />} />
-        <Route path="/research-crypto" element={<ResearchCryptoPage />} />
         <Route path="/research-overview" element={<ResearchOverviewPage />} />
-        <Route path="/research-quantum-computing" element={<ResearchQuantumComputingPage />} />
         <Route path="/roadmap-ethician" element={<RoadmapEthicianPage />} />
         <Route path="/roadmap-mcx" element={<RoadmapMCXPage />} />
       </Routes>

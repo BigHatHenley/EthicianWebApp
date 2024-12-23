@@ -45,9 +45,13 @@
 
 .footer-bottom {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 10px;
   border-top: 1px solid #555;
   padding-top: 20px;
   font-size: 0.9rem;
-  color: #aaa;
+  color: #ffffff;
+}
+
+.footer-bottom p {
+  color: white
 }

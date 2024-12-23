@@ -4,11 +4,15 @@ import MegaFooter from '../MegaFooter';
 
 const RoadmapMCXPage = () => {
     return (
-      <div className="roadmap-dynamic-gradient">
-        <div className="roadmap-content-wrapper">
-          <div className="roadmap-glassmorphic-container">
+      <>
+        {/* Background Layer */}
+        <div className="roadmap-background-mcx"></div>
+
+        {/* Foreground Content */}
+        <div className="roadmap-content-wrapper-mcx">
+          <div className="roadmap-glassmorphic-container-mcx">
             <h1>MultiChatXpert Roadmap: 2024–2026</h1>
-            <div className="roadmap-content">
+            <div className="roadmap-content-mcx">
               <h2>2024:</h2>
               <ul>
                 <li>Enhance core Alpha features, such as improving Text-to-Speech voices and refining Speech-to-Text accuracy.</li>
@@ -35,7 +39,7 @@ const RoadmapMCXPage = () => {
           </div>
           <MegaFooter />
         </div>
-      </div>
+      </>
     );
 };
 

@@ -31,13 +31,14 @@
 .navbar ul {
   align-items: center;
   padding: 0px;
+  font-size: 1.3rem;
 }
 
 .navbar-item button {
   background: none;
   border: none;
   color: rgb(0, 0, 0);
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   margin-right: -10px;
   cursor: pointer;
 }
@@ -77,4 +78,38 @@
 .navbar-item .active {
   font-weight: bold;
   color: #000000;
+}
+
+/* Contact Section */
+.contact-section {
+  padding: 50px;
+  text-align: center;
+  background-color: wheat;
+}
+
+.contact-section form .form-group {
+  margin: 15px 0;
+}
+
+.contact-section form input,
+.contact-section form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.contact-section form button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.contact-section form button:hover {
+  background-color: #575757;
 }

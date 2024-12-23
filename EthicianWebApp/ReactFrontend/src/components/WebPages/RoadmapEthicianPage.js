@@ -4,11 +4,15 @@ import MegaFooter from '../MegaFooter';
 
 const RoadmapEthicianPage = () => {
     return (
-      <div className="roadmap-dynamic-gradient">
-        <div className="roadmap-content-wrapper">
-          <div className="roadmap-glassmorphic-container">
+      <>
+        {/* Background Layer */}
+        <div className="roadmap-background-ethician"></div>
+
+        {/* Foreground Content */}
+        <div className="roadmap-content-wrapper-ethician">
+          <div className="roadmap-glassmorphic-container-ethician">
             <h1>ETHICIAN Roadmap: 2024–2026</h1>
-            <div className="roadmap-content">
+            <div className="roadmap-content-ethician">
               <h2>2024:</h2>
               <ul>
                 <li>Refine ETHICIAN’s conversational framework for more nuanced ethical reasoning.</li>
@@ -32,7 +36,7 @@ const RoadmapEthicianPage = () => {
           </div>
           <MegaFooter />
         </div>
-      </div>
+      </>
     );
 };
 
