@@ -1,354 +1,233 @@
-.my-ui-container {
+/*************************************************
+ *    1) Base Container + Toggling Classes       *
+ *************************************************/
+ .my-ui-container {
   display: grid;
-  grid-template-areas:
-    "ai console user"
-    "conversation conversation conversation"
-    "entry-box entry-box entry-box";
-  grid-template-columns: 23% 44% 23%;
-  grid-template-rows: auto 1fr auto;
-  gap: 10px;
-  width: 103.5%;
-  height: 87.7vh;
-  padding-left: 40px;
+  grid-template-areas: "sidebar main";
+  width: 99%;
+  height: 89.8vh;
+  padding: 10px;
+  overflow-x: hidden;
   background-color: #1e1e1e;
-  /*background-image: url("./images/RetroSpace1.png");*/
   color: #f1f1f1;
-  padding-top: 20px;
-}
-/* AI Image Container */
-.ai-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 10px;
 }
 
-.ai-image img {
-  width: 100%;
-  height: auto;
-  cursor: pointer;
-  max-height: 300px;
+.my-ui-container.sidebar-closed {
+  grid-template-columns: 60px minmax(0,1fr);
 }
 
-.ai-image img:hover {
-  opacity: 0.8;
-  border-color: #45a049;
+.my-ui-container.sidebar-open {
+  grid-template-columns: 300px minmax(0,1fr);
 }
 
-/* Console Container */
-.console-container {
+/*************************************************
+ *                2) Sidebar                     *
+ *************************************************/
+ .sidebar-container {
+  /* Let the sidebar fill its grid area’s vertical space */
+  grid-area: sidebar;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 10px;
-}
 
-.console {
-  text-align: center;
-  width: 100%;
-}
+  /* If you want it to occupy the full height
+     of the parent grid area, ensure you have
+     a defined height on the parent. For example: */
+  max-height: 90vh;
 
-.console-option {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  margin-top: -20px;
-}
-
-.console button {
-  width: 80%;
-  padding: 5px;
-  font-size: 18px;
-  margin: 10px 0;
-  background-color: #4caf50;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  text-align: center;
-}
-
-.console button:hover {
-  background-color: #45a049;
-}
-
-.console-grid {
-  display: grid;
-  grid-template-columns: 10fr 1fr; /* Settings display takes up 5/6, buttons 1/6 */
-  gap: 10px;
-  padding: 15px;
   background-color: #333;
-  border-radius: 10px;
-  height: 100%;
+  color: #f1f1f1;
+  border-radius: 15px;
+  transition: width 0.3s ease, min-width 0.3s ease;
+  /* IMPORTANT: remove or limit overflow here, 
+     because .sidebar-content will handle that. */
+  overflow: hidden; 
 }
 
-.settings-grid {
-  display: grid;
-  grid-template-columns: 4fr 1fr; /* Console on left, buttons on right */
-  gap: 10px;
-  align-items: center;
+
+/* .closed/.open for width transitions remain the same. */
+.sidebar-container.closed {
+  width: 60px;
+  min-width: 60px;
+}
+.sidebar-container.open {
+  width: 310px;
+  min-width: 310px;
 }
 
-.settings-container {
+.sidebar-header {
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  align-items: center;
+  background-color: #444;
+  padding: 0.75rem;
+  justify-content: space-between;
 }
 
-.settings-content {
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: #f1f1f1;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* .sidebar-content: Let this area scroll */
+.sidebar-content {
+  /* Make this portion fill up the remaining space
+     in the .sidebar-container vertically. */
   flex: 1;
-  max-height: 260px;
-  overflow-y: auto;
+
+  /* Enable scrolling here if content grows too tall */
+  overflow-y: auto;  
+
+  /* Your existing styling */
   padding: 10px;
-  margin-bottom: 10px;
+  background-color: white;
 }
 
-.expert-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #333;
-  padding: 20px;
-  border: 1px solid #555;
-  border-radius: 10px;
-  color: #fff;
-  width: 800px;
+/* If you want to explicitly remove overflow, use a .no-scroll class. */
+.no-scroll {
+  overflow: visible !important;
 }
 
-.expert-popup h4 {
-  font-size: 36px; /* Increase the font size as desired */
-  line-height: 1.2; /* Adjust line height to control vertical space */
-  padding: 0; /* Remove any additional padding */
-  margin: 0; /* Remove any default margin */
-  text-align: center; /* Center the text if desired */
-}
+/* .sidebar-footer: pinned at bottom of the sidebar by virtue of 
+   being below the flex:1 sibling */
+   .sidebar-footer {
+    /* This remains below the scrolling .sidebar-content
+       because .sidebar-content has flex:1 and 
+       .sidebar-footer is after it in the DOM. */
+    background-color: #222;
+    padding: 10px;
+    border-top: 1px solid #555;
+  }
+  
+  /* If you also want the conversation history list to 
+     have its own scroll area, you can keep max-height, 
+     e.g. 180px, and an overflow-y: auto. */
+  .sidebar-footer .conversation-history {
+    max-height: 180px;
+    overflow-y: auto;
+  }
 
-.expert-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
-  margin-bottom: 10px;
-  margin-top: 15px;
-}
-
-/* Expert button styling */
-.expert-button {
-  padding: 8px;
-  background-color: #ddd;
-  color: #333;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  width: 150px;
-  height: 50px;
-}
-
-/* Selected (toggled on) expert button styling */
-.expert-button.selected {
-  background-color: #4CAF50; /* Green color for active */
-  color: white;
-}
-
-.expert-edit-popup {
-  margin-top: 10px;
-}
-
-.close-popup-button {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: #666;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-}
-
-.conversation-history {
-  max-height: 150px;
-  overflow-y: auto;
-  width: 100%;
-  padding: 5px;
-  background-color: #222;
-  border: 1px solid #555;
-  border-radius: 3px;
-}
-
-.conversation-item {
+.sidebar-footer .conversation-item {
   padding: 5px;
   font-size: 0.9rem;
   color: #ddd;
   border-bottom: 1px solid #444;
+  cursor: pointer;
 }
 
-.llm-dropdown {
-  width: 80%;
-  padding: 5px;
-  font-size: 1rem;
-  background-color: #444;
-  color: #fff;
-  border: 1px solid #555;
-  border-radius: 3px;
+.sidebar-footer .conversation-item:hover {
+  background-color: #555;
 }
 
-.settings-display {
-  grid-column: 1 / 2;
-  display: flex;
-  height: 200px;
-  justify-content: center;
-  align-items: center;
-  background-color: #222;
-  color: #fff;
-  font-size: 36px;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.settings-buttons {
-  grid-column: 2 / 3;
+/*************************************************
+ *          3) Main Content (1fr Area)          *
+ *************************************************/
+.main-content {
+  grid-area: main;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  justify-content: center;
+  min-width: 0;
 }
 
-.up-arrow, .down-arrow, .select-button {
-  height: 73px;
-  padding: 15px;
-  font-size: 18px;
-  background-color: #4caf50;
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
+/*************************************************
+ *          4) Expert Matrix Container          *
+ *************************************************/
+.expert-matrix-container {
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-.settings-options {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.settings-options h3 {
-  margin-top: 20px;
-  font-size: 10px;
+.expert-matrix-container h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.settings-options button {
-  margin: 10px;
-}
-
-.settings-page-content {
+.expert-grid {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-  width: 100%;
+  gap: 5px;
+  padding-top: 10px;
+  justify-items: center;
+  min-width: 500px;
+  max-width: 97.5%;
+  margin: 0 auto;
+  flex-shrink: 1;
 }
 
-.back-button {
-  align-self: center;
-  margin: 10px;
-}
-
-.volume-slider-container {
-  grid-column: 1 / span 2; /* Span across both columns */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 0;
-  margin-top: 10px;
-}
-
-.volume-label, .volume-level {
-  font-size: 0.9em;
-  width: 50px; /* Adjust width for balance */
-}
-
-.volume-slider {
-  flex: 1;
-  margin: 0 10px;
-}
-
-/* User Image Container */
-.user-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.user-image img {
-  width: 100%;
-  height: auto;
+.expert-button {
+  padding: 8px;
+  background-color: #333;
+  color: #f1f1f1;
+  border-radius: 25px;
+  border: none;
   cursor: pointer;
-  max-height: 300px;
+  text-align: center;
+  width: 120px;
+  height: 50px;
 }
 
-.user-image img:hover {
-  opacity: 0.8;
-  border-color: #45a049;
+.expert-button.selected {
+  background-color: #4CAF50;
+  color: white;
 }
 
-/* Conversation Window Container */
+/*************************************************
+ *        5) Conversation Container             *
+ *************************************************/
 .conversation-container {
-  grid-area: conversation;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   background-color: #1e1e1e;
   border: 1px solid #333;
   border-radius: 10px;
-  width: 100%;  /* Make sure it takes full width on smaller screens */
-  margin: 0 auto;  /* Center the container */
   overflow-y: auto;
+  height: 78%;
+  min-width: 96%;
+  max-width: 98%;
+  margin: 0 auto;
+  flex: 0 1 auto;
 }
 
 .conversation-window {
   display: flex;
-  flex-direction: column; /* Ensure vertical stacking */
-  width: 100%;
-  max-height: 400px;
+  flex-direction: column;
+  width: 98%;
   overflow-y: auto;
   color: #fff;
+  padding: 10px;
 }
 
 .message-bubble {
-  display: inline-block; /* Make the bubble shrink to fit content */
-  padding-right: 10px;         /* Add padding around the text */
-  padding-left: 10px;
+  display: inline-block;
+  padding: 10px;
   border-radius: 10px;
   margin: 10px 0;
+  max-width: 70%;
+  word-wrap: break-word;
   background-color: #333;
-  max-width: 70%; /* Ensure message bubbles don't get too wide */
-  word-wrap: break-word; /* Ensure long words break into new lines */
 }
 
 .user-message {
   background-color: #4caf50;
   color: #fff;
-  margin-top: 10px;
-  margin-right: 10px;
-  align-self: flex-end; /* Align user message to the right */
+  align-self: flex-end;
 }
 
 .ai-message {
   background-color: #18baeb;
-  align-self: flex-start; /* Align AI message to the left */
-  line-height: 1.6;           /* Increase line height for better spacing */
-  word-wrap: break-word;      /* Allow wrapping for long words */
-  white-space: pre-wrap;      /* Preserve formatting and line breaks */
+  align-self: flex-start;
+  white-space: pre-wrap;
   margin-left: 10px;
 }
 
-/* Entry Box Container */
+/*************************************************
+ *            6) Entry Box Container            *
+ *************************************************/
 .entry-box-container {
-  grid-area: entry-box;
   display: flex;
-  align-items: center;
   justify-content: center;
   padding-bottom: 20px;
 }
@@ -357,12 +236,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;  /* Make sure it takes full width on smaller screens */
-  margin: 0 auto;  /* Center the container */
-  background-color: #333;
+  min-width: 95%;
+  max-width: 98%;
+  margin: 0 auto; 
   padding: 10px;
   border-radius: 25px;
   position: relative;
+  background-color: #333;
+  flex-shrink: 1;
+  margin-bottom: -15px;
 }
 
 .prompt-input {
@@ -373,35 +255,16 @@
   border-radius: 25px;
   color: #f1f1f1;
   outline: none;
-  resize: none; /* Disable manual resizing */
-  overflow: hidden; /* Hide scrollbar */
-  height: 20px; /* Default height when not focused */
-  max-width: 80%
+  resize: none;
+  overflow: hidden;
+  height: 20px;
+  max-width: 87%;
 }
 
 .prompt-input:focus {
-  min-height: 20px;  /* Keep the minimum height on focus */
-  max-height: 400px; /* Set a max height to prevent excessive growth */
-  overflow-y: auto;  /* Enable scrolling if it exceeds the max height */
-}
-
-.input-section button {
-  margin-left: 10px;
-  padding: 10px;
-  background-color: transparent;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-}
-
-.input-section button:hover {
-  background-color: #33c43b;
-}
-
-/* Ensure that buttons are visible and spaced properly */
-.input-section button:last-child {
-  margin-right: 10px;
+  min-height: 20px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .icon-button {
@@ -409,122 +272,21 @@
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  color: #555;
-  transition: color 0.3s ease;
+  color: #bbb;
+  margin-right: 20px;
+  margin-left: 10px;
 }
 
 .icon-button:hover {
-  color: #000;
-}
-
-.attached-files-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.attached-file-popup {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.attached-file-image {
-  max-height: 40px;
-  border-radius: 5px;
-}
-
-.remove-file-button {
-  background-color: #ff4d4d;
-  color: #fff;
-  border: none;
-  padding: 2px 6px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.remove-file-button:hover {
-  background-color: #e60000;
-}
-
-.tts-button {
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.tts-enabled {
-  background-color: #4caf50; /* Green for enabled */
-  color: white;
-}
-
-.tts-disabled {
-  background-color: #f44336; /* Red for disabled */
-  color: white;
-}
-
-.listening-indicator {
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ffeb3b;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1.2em;
-  color: #333;
-  z-index: 100;
-}
-
-.speech-button.listening {
-  background-color: #ff5733;
   color: #fff;
 }
 
-.speech-button {
-  padding: 8px 12px;
-  font-size: 1em;
-  margin-top: 10px;
-  width: 100%; /* Full width within settings */
-  text-align: center;
-}
-
-/* Popup */
-.popup, .edit-popup {
-  position: absolute; /* Center relative to parent container */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #333;
-  padding: 20px;
-  border-radius: 10px;
-  color: #fff;
-  text-align: center;
-}
-
-/* Overlay for the popup */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
+/*************************************************
+ *     7) Attached Files, Console, Etc.         *
+ *************************************************/
 .attached-files-container {
   position: absolute;
-  bottom: 100%; /* Position above the entry bar */
+  bottom: 100%;
   left: 0;
   width: 100%;
   display: flex;
@@ -563,4 +325,98 @@
   color: #ff6347;
   font-size: 1.2em;
   cursor: pointer;
+}
+
+/*************************************************
+ *       8) Settings Panel Layout (New)         *
+ *************************************************/
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* space out each setting block */
+}
+
+.setting-item {
+  background-color: #222;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.setting-item h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.expert-update-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tts-button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tts-enabled {
+  background-color: #4caf50; 
+  color: white;
+}
+
+.tts-disabled {
+  background-color: #f44336; 
+  color: white;
+}
+
+.volume-slider-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.volume-label,
+.volume-level {
+  font-size: 0.9em;
+  width: 50px; 
+}
+
+.volume-slider {
+  flex: 1;
+}
+
+.llm-dropdown {
+  background-color: #444;
+  border-radius: 5px;
+  color: #f1f1f1;
+  padding: 5px;
+  border: none;
+}
+
+/*************************************************
+ *       9) Edit Expert Popup Overlay           *
+ *************************************************/
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-popup {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
 }

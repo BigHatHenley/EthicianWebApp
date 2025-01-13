@@ -1,5 +1,5 @@
 /* General Reset */
-body, html {
+.homepage body, .homepage html {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -13,16 +13,15 @@ body, html {
 }
 
 /* Navbar styles */
-.navbar {
+.homepage .navbar {
   position: sticky;
   top: 0;
-  /* background-image: url('./components/images/NavBar.png'); */
   background-color: wheat;
   padding: 10px 20px;
   z-index: 1000;
 }
 
-.navbar ul {
+.homepage .navbar ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -30,26 +29,24 @@ body, html {
   justify-content: space-around;
 }
 
-.navbar ul li {
-  display: inline; /* Display list items horizontally */
-  margin-right: 20px; /* Add some space between list items */
+.homepage .navbar ul li {
+  display: inline;
+  margin-right: 20px;
 }
 
-.navbar ul li a {
+.homepage .navbar ul li a {
   text-decoration: none;
   color: rgb(0, 0, 0);
   padding: 10px 10px;
-  margin-top: -10px;
-  margin-bottom: -20px;
 }
 
-.navbar ul li a:hover {
+.homepage .navbar ul li a:hover {
   background-color: transparent;
   border-radius: 25px;
 }
 
 /* Parallax Effect for Sections */
-.parallax {
+.homepage .parallax {
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
@@ -62,73 +59,69 @@ body, html {
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
 }
 
-
 /* Intro Section */
-.intro-section {
-  height: 100vh; /* Full height of the viewport */
+.homepage .intro-section {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centers content vertically */
-  align-items: center; /* Centers content horizontally */
-  background-image: url('./components/images/RetroSunrise.png'); /* Ensure the background image is set */
-  background-size: cover; /* Make the image cover the entire section */
-  background-position: center; /* Center the image */
-  background-attachment: fixed; /* For the parallax effect */
+  justify-content: center;
+  align-items: center;
+  background-image: url('./components/images/RetroSunrise.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   text-align: center;
   color: white;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
 }
 
-.intro-section .overlay {
+.homepage .intro-section .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  box-sizing: border-box;
 }
 
-/* Hero Text */
-.hero-text {
+.homepage .hero-text {
   position: center;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.35); /* Semi-transparent black overlay */
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  box-sizing: border-box;
 }
 
-.hero-text h1 {
+.homepage .hero-text h1 {
   max-width: 80%;
   font-size: 6rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color:#1ABC9C;
+  color: #1ABC9C;
 }
 
-.hero-text p {
+.homepage .hero-text p {
   font-size: 1.5rem;
   line-height: 1.6;
   margin-bottom: 2rem;
-  color:#20A583;
+  color: #20A583;
 }
 
-.cta-button {
+.homepage .cta-button {
   display: flex;
   justify-content: center;
-  gap:20px;
+  gap: 20px;
   margin-bottom: 20px;
   background: #1ABC9C;
   color: #ffffff;
@@ -142,119 +135,117 @@ body, html {
   transition: all 0.3s ease-in-out;
 }
 
-.cta-button:hover {
+.homepage .cta-button:hover {
   background: linear-gradient(90deg, #16A085, #1ABC9C);
   transform: scale(1.05);
 }
 
-.cta-button.secondary {
+.homepage .cta-button.secondary {
   background: #1ABC9C;
 }
 
-
 /* About Section */
-.about-section {
+.homepage .about-section {
   display: flex;
   flex-direction: row;
   background-color: wheat;
   justify-content: space-between;
-  align-items: stretch; /* Ensures equal height for child containers */
+  align-items: stretch;
   max-height: 100vh;
   padding: 50px;
   margin-bottom: -140px;
 }
 
-/* Overlay for About Image */
-.about-image {
-  position: relative; /* Establish a stacking context */
-  flex: 6; /* 60% width */
+.homepage .about-image {
+  position: relative;
+  flex: 6;
   background-image: url('./components/images/RetroDay.png');
   max-height: 84vh;
-  background-size: cover; /* Make the image cover the entire section */
-  background-position: center; /* Center the image */
-  background-attachment: fixed; /* For the parallax effect */
-  overflow: hidden; /* Ensure overlay doesn't spill out */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow: hidden;
 }
 
-.about-image::before {
+.homepage .about-image::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.35); /* Semi-transparent black overlay */
-  z-index: 1; /* Place it above the image */
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
 }
 
-.about-text {
-  flex: 4; /* 40% width */
+.homepage .about-text {
+  flex: 4;
   max-height: 79.72vh;
   padding: 20px;
-  background: #20A583; /* Semi-transparent black background */
-  display: flex; /* Center content vertically */
+  background: #20A583;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 }
 
-.about-text h2 {
+.homepage .about-text h2 {
   font-size: 2.5rem;
   margin-bottom: 20px;
   color: white;
 }
 
-.about-text p {
+.homepage .about-text p {
   font-size: 1.2rem;
   color: white;
 }
 
 /* Features Section */
-.features-section {
+.homepage .features-section {
   text-align: center;
   padding: 50px;
-  background: rgba(0, 0, 0, 0.35); /* Semi-transparent black overlay */
+  background: rgba(0, 0, 0, 0.35);
   background-image: url('./components/images/RetroSunset.png');
-  background-size: cover; /* Make the image cover the entire section */
-  background-position: center; /* Center the image */
-  background-attachment: fixed; /* For the parallax effect */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-.features-section h2 {
-  color:white;
+.homepage .features-section h2 {
+  color: white;
 }
 
-.features-grid {
+.homepage .features-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
-  row-gap: 60px; /* Space between grid items */
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 60px;
   column-gap: 20px;
   margin-top: 20px;
   margin-bottom: 10px;
 }
 
-.feature-card {
+.homepage .feature-card {
   background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex; /* Ensure consistent card height */
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   height: 100%;
 }
 
-.feature-card h3 {
+.homepage .feature-card h3 {
   margin-bottom: 10px;
 }
 
-.feature-card p {
+.homepage .feature-card p {
   margin-bottom: 15px;
 }
 
-.feature-card a {
-  align-self: flex-start; /* Align buttons to the start */
+.homepage .feature-card a {
+  align-self: flex-start;
   text-decoration: none;
   padding: 10px 15px;
   background: #1ABC9C;
@@ -263,13 +254,13 @@ body, html {
   transition: background-color 0.3s ease;
 }
 
-.feature-card a:hover {
+.homepage .feature-card a:hover {
   background: linear-gradient(90deg, #16A085, #1ABC9C);
   transform: scale(1.05);
 }
 
 /* Footer Styling */
-.mega-footer {
+.homepage .mega-footer {
   background-color: #333;
   color: white;
   padding: 20px;

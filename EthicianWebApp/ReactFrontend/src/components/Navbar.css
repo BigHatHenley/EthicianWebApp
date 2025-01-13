@@ -1,7 +1,7 @@
 .navbar {
   position: sticky;
   top: 0;
-  background-color: black;
+  background-color: wheat;
   transition: background-color 0.3s, box-shadow 0.3s;
   z-index: 1000;
   display: flex;
@@ -25,7 +25,7 @@
 
 .navbar-item {
   position: relative;
-  margin: 0 0px;
+  margin: 0 20px;
 }
 
 .navbar ul {
@@ -41,6 +41,31 @@
   font-size: 1.3rem;
   margin-right: -10px;
   cursor: pointer;
+}
+
+/* Reset link styles in navbar */
+.navbar-item a {
+  text-decoration: none; /* Remove underline */
+  color: rgb(0, 0, 0); /* Default color for links */
+  font-size: 1.3rem;
+  margin-right: -10px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Link states */
+.navbar-item a:visited,
+.navbar-item a:link {
+  text-decoration: none; /* Ensure no underline for visited links */
+  color: rgb(0, 0, 0); /* Match default link color */
+}
+
+.navbar-item a:hover {
+  color: #555; /* Add hover effect for links */
+}
+
+.navbar-item a:active {
+  color: #333; /* Add active state styling */
 }
 
 .navbar-item .dropdown-menu {
