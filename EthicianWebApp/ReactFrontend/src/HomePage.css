@@ -50,7 +50,7 @@
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
-  height: 100vh; /* Full viewport height */
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -61,7 +61,7 @@
 
 /* Intro Section */
 .homepage .intro-section {
-  /*height: 100vh;*/
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -151,7 +151,7 @@
   background-color: wheat;
   justify-content: space-between;
   align-items: stretch;
-  max-height: 100vh;
+
   padding: 50px;
   margin-bottom: -140px;
 }
